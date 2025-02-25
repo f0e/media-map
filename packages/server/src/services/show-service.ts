@@ -14,7 +14,7 @@ import {
 } from "../database/queries";
 import { MAX_PAGES, UPDATE_INTERVAL_SECS } from "../config";
 
-export async function addShow(db: Database, showId: number) {
+export async function addOrUpdateShow(db: Database, showId: number) {
 	// check if show exists and needs update
 	const showLastUpdate = getShowLastUpdate(db, showId);
 	const now = Date.now();
@@ -59,7 +59,7 @@ export async function addOrUpdateShows(db: Database, shows: any[]) {
 
 		await Promise.all(
 			batch.map(async (show: any) => {
-				await addShow(db, show.id);
+				await addOrUpdateShow(db, show.id);
 			}),
 		);
 	}
