@@ -1,0 +1,23 @@
+{
+	"name": "@show-graph/server",
+	"module": "src/index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"dev": "bun run --hot .",
+		"check": "biome check --fix"
+	},
+	"dependencies": {
+		"@show-graph/shared": "workspace:*",
+		"cheerio": "^1.0.0",
+		"dotenv": "^16.4.7",
+		"numbro": "^2.5.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	}
+}

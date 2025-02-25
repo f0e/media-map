@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { GraphData, ShowNode } from "./types";
+import { GraphData, ShowNode } from "@show-graph/shared";
 
 export const initFuseSearch = (nodes: ShowNode[]) => {
   return new Fuse(nodes, {
