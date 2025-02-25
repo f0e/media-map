@@ -11,8 +11,8 @@ export const renderNode = (
   node: any, 
   ctx: CanvasRenderingContext2D, 
   globalScale: number,
-  logoMap: Map<string, HTMLImageElement>,
-  nodeSize: number
+  nodeSize: number,
+  logoMap: Map<string, HTMLImageElement> | null
 ) => {
   const label = node.name;
   const radius = node.val * nodeSize;
