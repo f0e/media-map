@@ -41,7 +41,7 @@ export const renderNode = (
     const network = node.networks[0];
     const logoImg = logoMap?.get(network.toLowerCase());
 
-    if (logoImg) {
+    if (logoImg && globalScale > 0.5) { // > 0.5 = optimisation, rendering images is more expensive
       const aspectRatio = logoImg.width / logoImg.height;
 
       let drawWidth, drawHeight;
