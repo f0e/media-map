@@ -113,7 +113,7 @@ export function processMovieData(db: Database): Movie[] {
 
       const people: Person[] = [];
 
-      const relevantRoles = ["Director", "Executive Producer"];
+      const relevantRoles = ["Director", "Executive Producer", "Screenplay"];
 
       people.push(
         ...crewData.crew

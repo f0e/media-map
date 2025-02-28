@@ -1,5 +1,9 @@
 import type { Database } from "bun:sqlite";
-import { EXCLUDED_GENRES, MIN_IMDB_RATING, MIN_IMDB_VOTES } from "../config";
+import {
+  MOVIE_EXCLUDED_GENRES,
+  MOVIE_MIN_IMDB_RATING,
+  MOVIE_MIN_IMDB_VOTES,
+} from "../config";
 
 export function getMovieLastUpdate(
   db: Database,
@@ -62,11 +66,11 @@ export function getQualifiedMovies(db: Database): any[] {
     .query(
       `
       SELECT * FROM movies_raw 
-      WHERE imdb_rating > ${MIN_IMDB_RATING}
-      AND imdb_votes > ${MIN_IMDB_VOTES}
+      WHERE imdb_rating > ${MOVIE_MIN_IMDB_RATING}
+      AND imdb_votes > ${MOVIE_MIN_IMDB_VOTES}
       AND NOT EXISTS (
         SELECT 1 FROM json_each(movies_raw.tmdb_data, '$.genres')
-        WHERE json_each.value->>'name' = '${EXCLUDED_GENRES[0]}'
+        WHERE json_each.value->>'name' = '${MOVIE_EXCLUDED_GENRES[0]}'
       )
     `
     )

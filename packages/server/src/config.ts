@@ -11,6 +11,10 @@ export const UPDATE_INTERVAL_SECS = 30 * 24 * 60 * 60;
 export const MUSIC_API_KEY = process.env.MUSIC_API_KEY;
 export const MUSIC_BASE_URL = "https://api.music-database.example.com/v1"; // Replace with actual API
 
-export const MIN_IMDB_RATING = 6;
-export const MIN_IMDB_VOTES = 1000;
-export const EXCLUDED_GENRES = ["Kids"]; // todo: fix multiple elems
+export const TV_MIN_IMDB_RATING = 6;
+export const TV_MIN_IMDB_VOTES = 1000;
+export const TV_EXCLUDED_GENRES = ["Kids"]; // todo: fix multiple elems
+
+export const MOVIE_MIN_IMDB_RATING = 7.7;
+export const MOVIE_MIN_IMDB_VOTES = 10000;
+export const MOVIE_EXCLUDED_GENRES = ["Kids"]; // todo: fix multiple elems

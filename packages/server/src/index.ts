@@ -9,5 +9,5 @@ const db = initDatabase();
 
 startServer(db);
 
-getTMDBTopMovies(db);
+// getTMDBTopMovies(db);
 updateDatabase(db);
