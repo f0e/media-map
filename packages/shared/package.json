@@ -1,6 +1,11 @@
 {
   "name": "@show-graph/shared",
   "private": true,
+  "module": "types.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

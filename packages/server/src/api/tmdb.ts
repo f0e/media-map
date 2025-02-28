@@ -27,10 +27,26 @@ export async function getShowCredits(showId: number) {
 	return await tmdbFetch(`/tv/${showId}/credits`);
 }
 
-export async function getExternalIds(showId: number) {
+export async function getShowExternalIds(showId: number) {
 	return await tmdbFetch(`/tv/${showId}/external_ids`);
 }
 
 export async function getTopRatedShows(page: number) {
 	return await tmdbFetch(`/tv/top_rated?page=${page}`);
+}
+
+export async function getMovieDetails(movieId: number) {
+	return await tmdbFetch(`/movie/${movieId}`);
+}
+
+export async function getMovieCredits(movieId: number) {
+	return await tmdbFetch(`/movie/${movieId}/credits`);
+}
+
+export async function getMovieExternalIds(movieId: number) {
+	return await tmdbFetch(`/movie/${movieId}/external_ids`);
+}
+
+export async function getTopRatedMovies(page: number) {
+	return await tmdbFetch(`/movie/top_rated?page=${page}`);
 }

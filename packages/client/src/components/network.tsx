@@ -5,18 +5,18 @@ import Graph from "@/components/graph/graph";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
-const ShowNetwork: React.FC = () => {
-  const { data: graphData, isLoading: isLoadingShows, error } = useShowsData();
+const Network: React.FC = () => {
+  const { data: graphData, isLoading, error } = useShowsData();
   const [isGraphInitialized, setIsGraphInitialized] = useState(false);
 
   const graphRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
   // Combined loading state (either API data loading or graph initializing)
-  const isLoaderVisible = isLoadingShows || (graphData && !isGraphInitialized);
+  const isLoaderVisible = isLoading || (graphData && !isGraphInitialized);
 
   // Loading text based on the current phase
-  const loadingText = isLoadingShows
+  const loadingText = isLoading
     ? "Loading show network data..."
     : "Loading graph...";
 
@@ -67,4 +67,4 @@ const ShowNetwork: React.FC = () => {
   );
 };
 
-export default ShowNetwork;
+export default Network;

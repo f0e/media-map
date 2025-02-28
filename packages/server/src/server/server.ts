@@ -1,40 +1,80 @@
 import type { Database } from "bun:sqlite";
 import { SERVER_PORT } from "../config";
-import { processShowData } from "../services/processing";
+import {
+  fetchAlbumsByLabel,
+  fetchAlbumsByFeaturedArtist,
+} from "../services/music-service";
+import { processMovieData } from "../services/movie-service";
+import { processShowData } from "../services/show-service";
 
 export function startServer(db: Database) {
-	Bun.serve({
-		port: SERVER_PORT,
-		routes: {
-			"/api/shows": async (req) => {
-				let res = null;
+  Bun.serve({
+    port: SERVER_PORT,
+    async fetch(req) {
+      const url = new URL(req.url);
+      const path = url.pathname;
 
-				try {
-					const shows = processShowData(db);
+      // CORS preflight handling
+      if (req.method === "OPTIONS") {
+        return new Response(null, {
+          status: 204,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          },
+        });
+      }
 
-					res = new Response(JSON.stringify(shows), {
-						headers: { "Content-Type": "application/json" },
-					});
-				} catch (error) {
-					res = new Response(
-						JSON.stringify({ error: "Failed to fetch shows" }),
-						{
-							status: 500,
-							headers: { "Content-Type": "application/json" },
-						},
-					);
-				}
+      let res: Response;
 
-				res.headers.set("Access-Control-Allow-Origin", "*");
-				res.headers.set(
-					"Access-Control-Allow-Methods",
-					"GET, POST, PUT, DELETE, OPTIONS",
-				);
+      try {
+        // TV Shows endpoint
+        if (path === "/api/shows") {
+          const shows = processShowData(db);
+          res = new Response(JSON.stringify(shows));
+        }
+        // Movies endpoint
+        else if (path === "/api/movies") {
+          const movies = processMovieData(db);
+          res = new Response(JSON.stringify(movies));
+        }
+        // // Music endpoints
+        // else if (path.startsWith("/api/music/label/")) {
+        //   const labelName = decodeURIComponent(
+        //     path.replace("/api/music/label/", "")
+        //   );
+        //   const albums = await fetchAlbumsByLabel(db, labelName);
+        //   res = new Response(JSON.stringify(albums));
+        // } else if (path.startsWith("/api/music/featured-artist/")) {
+        //   const artistName = decodeURIComponent(
+        //     path.replace("/api/music/featured-artist/", "")
+        //   );
+        //   const albums = await fetchAlbumsByFeaturedArtist(db, artistName);
+        //   res = new Response(JSON.stringify(albums));
+        else {
+          res = new Response(JSON.stringify({ error: "Not found" }), {
+            status: 404,
+          });
+        }
+      } catch (error) {
+        console.error("API Error:", error);
+        res = new Response(JSON.stringify({ error: "Internal server error" }), {
+          status: 500,
+        });
+      }
 
-				return res;
-			},
-		},
-	});
+      // Set common headers
+      res.headers.set("Content-Type", "application/json");
+      res.headers.set("Access-Control-Allow-Origin", "*");
+      res.headers.set(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS"
+      );
 
-	console.log(`Server running at http://localhost:${SERVER_PORT}`);
+      return res;
+    },
+  });
+
+  console.log(`Server running at http://localhost:${SERVER_PORT}`);
 }

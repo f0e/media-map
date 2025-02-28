@@ -23,7 +23,7 @@ const transformToGraphData = (shows: Show[]): GraphData => {
       id: show.id,
       name: show.title,
       type: "show",
-      networks: show.networks,
+      networks: show.production_companies,
       val: 2,
       groupLinks: 0,
     });
@@ -108,7 +108,7 @@ const calculateGroups = (
 };
 
 const fetchShows = async (): Promise<Show[]> => {
-  const response = await fetch("http://localhost:3001/api/shows");
+  const response = await fetch("http://localhost:3001/api/movies");
 
   if (!response.ok) {
     throw new Error(`Failed to fetch shows: ${response.status}`);
