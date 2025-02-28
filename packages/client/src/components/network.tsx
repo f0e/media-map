@@ -18,13 +18,13 @@ const Network: React.FC = () => {
   const graphRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  // Combined loading state (either API data loading or graph initializing)
+  // Combined loading state (either API data loading or graph initialising)
   const isLoaderVisible = isLoading || (graphData && !isGraphInitialized);
 
   // Loading text based on the current phase and media type
   const loadingText = isLoading
-    ? `Loading ${activeMediaType} network data...`
-    : "Initializing visualization...";
+    ? `Loading ${activeMediaType} data...`
+    : "Initialising visualization...";
 
   const handleMediaTypeChange = (type: MediaType) => {
     setActiveMediaType(type);

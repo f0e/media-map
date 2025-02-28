@@ -50,11 +50,10 @@ export function createGraphElements(
 
     // Fill color based on node type, with theme consideration
     let fillColor;
-    if (node.type === "show") {
+    if (node.type !== "person") {
       if (node.topText?.length) {
         // Apply theme-specific color adjustment to network colors
         const baseColor = stringToColor(getNetworkColor(node.topText[0]));
-        console.log(node.name, baseColor);
         fillColor = isDarkTheme
           ? baseColor
           : adjustColorBrightness(baseColor, -15);
@@ -72,9 +71,9 @@ export function createGraphElements(
     nodeItem.addChild(circle);
 
     // Add node label for show type
-    if (node.type === "show") {
+    if (node.type !== "person") {
       const label = createLabel(
-        node.name || node.id,
+        `${node.name} (${node.year})`,
         font,
         0,
         radius + 3,
@@ -105,7 +104,7 @@ export function createGraphElements(
 
     // Setup event handlers
     nodeItem.on("pointerover", (e) => {
-      tooltipHandlers.showTooltip(node.name || node.id, e.clientX, e.clientY);
+      tooltipHandlers.showTooltip(node.name, e.clientX, e.clientY);
     });
 
     nodeItem.on("pointermove", (e) => {

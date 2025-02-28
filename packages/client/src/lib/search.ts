@@ -1,7 +1,7 @@
 import Fuse from "fuse.js";
-import { GraphData, ShowNode } from "@/lib/types";
+import type { GraphData, GraphNode } from "@/lib/types";
 
-export const initFuseSearch = (nodes: ShowNode[]) => {
+export const initFuseSearch = (nodes: GraphNode[]) => {
   return new Fuse(nodes, {
     keys: ["name"],
     threshold: 0.4,
@@ -17,7 +17,7 @@ export const performSearch = (
 ) => {
   if (!graphRef || !query) return;
 
-  const showNodes = graphData.nodes.filter((node) => node.type === "show");
+  const showNodes = graphData.nodes.filter((node) => node.type !== "person");
   const fuse = initFuseSearch(showNodes);
   const results = fuse.search(query);
 

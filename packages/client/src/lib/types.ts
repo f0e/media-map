@@ -4,6 +4,7 @@ export interface GraphNode {
   val: number;
   type: "show" | "movie" | "album" | "person";
   groupLinks: number;
+  year?: number;
   topText?: string[];
   vx?: number; // force graph adds this
   vy?: number; // force graph adds this
@@ -21,6 +22,7 @@ export interface LinkNode {
 export interface GraphData {
   nodes: GraphNode[];
   links: LinkNode[];
+  simulation?: d3.Simulation<any, any>;
 }
 
 export interface Person {

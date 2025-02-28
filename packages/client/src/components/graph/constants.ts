@@ -8,10 +8,11 @@ export const ANIMATION_EASING = "easeInOutCubic";
 
 export const SIMULATION_SETTINGS = {
   linkDistance: 50,
-  manyBodyStrength: -1000,
+  chargeStrength: -1000,
   initialTicks: 2,
-  alphaDecayDelay: 2000,
+  alphaDecayDelay: 2300,
   alphaDecayValue: 0.05,
+  startDistance: 1000,
 };
 
 export const stringToColor = (color: string): number =>

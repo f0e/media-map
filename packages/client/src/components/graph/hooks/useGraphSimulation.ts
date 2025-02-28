@@ -11,7 +11,7 @@ import { ShowNode, LinkNode, GraphData } from "@/lib/types";
 import { ComputedTheme, useTheme } from "@/components/theme-provider";
 
 export function useGraphSimulation(
-  graphDataRaw: GraphData,
+  graphData: GraphData,
   initialised: boolean,
   nodeContainer: Container | null,
   linkContainer: Container | null,
@@ -24,16 +24,10 @@ export function useGraphSimulation(
 ) {
   const simulationRef = useRef<d3.Simulation<any, any> | null>(null);
 
-  const [modifiedGraphData, setModifiedGraphData] = useState({} as GraphData);
-
-  useEffect(() => {
-    setModifiedGraphData(structuredClone(graphDataRaw));
-  }, [graphDataRaw]);
-
   useEffect(() => {
     if (!initialised || !nodeContainer || !linkContainer) return;
 
-    const { nodes, links } = modifiedGraphData;
+    const { nodes, links } = graphData;
 
     console.log("changed theme");
 
@@ -53,18 +47,30 @@ export function useGraphSimulation(
       linkContainer,
       theme === "dark"
     );
-  }, [modifiedGraphData, theme]);
+  }, [graphData, theme]);
 
   useEffect(() => {
     if (!initialised || !nodeContainer || !linkContainer) return;
 
     console.log("run");
 
-    const { nodes, links } = modifiedGraphData;
-
-    // Clean up previous simulation
     if (simulationRef.current) {
+      console.log("why bro");
       simulationRef.current.stop();
+    }
+
+    const { nodes, links } = graphData;
+
+    let first = true;
+    let stopTimer: Timer;
+
+    // reset nodes
+    for (const node of nodes) {
+      node.x = Number.NaN; // "If either x or y is NaN, the position is initialized in a phyllotaxis arrangement, so chosen to ensure a deterministic, uniform distribution"
+      node.y = Number.NaN; // https://d3js.org/d3-force/simulation#simulation_nodes
+
+      node.vx = 0;
+      node.vy = 0;
     }
 
     // Initialize graph (create all nodes and links)
@@ -76,7 +82,6 @@ export function useGraphSimulation(
       tooltipHandlers,
       theme === "dark"
     );
-
     // Calculate center force based on node connections
     const mostLinks = nodes.reduce((maxNode, currentNode) =>
       currentNode.groupLinks > maxNode.groupLinks ? currentNode : maxNode
@@ -122,50 +127,56 @@ export function useGraphSimulation(
       // initial push
       .force(
         "charge",
-        d3.forceManyBody().strength(SIMULATION_SETTINGS.manyBodyStrength)
+        d3.forceManyBody().strength(SIMULATION_SETTINGS.chargeStrength)
       )
       // keep stuff centered
       .force("center", d3.forceCenter())
       .alphaDecay(0)
       .on("tick", () => {
-        if (nodeContainer && linkContainer) {
-          updatePositions(
-            nodes,
-            links,
-            nodeContainer,
-            linkContainer,
-            theme === "dark"
-          );
+        updatePositions(nodes, links, nodeContainer, linkContainer);
+        // console.log(
+        //   nodes.slice(0, 1).map((node) => `x: ${node.x}, y: ${node.y}`)
+        // );
+        // console.log(nodes[0]);
+
+        if (first) {
+          console.log("first");
+          first = false;
+          // Set timer to start decay after initial layout
+          stopTimer = setTimeout(() => {
+            simulation.alphaDecay(SIMULATION_SETTINGS.alphaDecayValue);
+
+            console.log("finished", graphData);
+          }, SIMULATION_SETTINGS.alphaDecayDelay);
         }
       });
 
-    // Set timer to start decay after initial layout
-    const stopTimer = setTimeout(() => {
-      simulation.alphaDecay(SIMULATION_SETTINGS.alphaDecayValue);
-    }, SIMULATION_SETTINGS.alphaDecayDelay);
+    // force simulation works better starting with all nodes really far away then they come towards the center plus it looks cool
+    // im a genius?
+    for (const node of nodes) {
+      node.x = node.x! * SIMULATION_SETTINGS.startDistance; // expand outwards, they're already distributed circularly
+      node.y = node.y! * SIMULATION_SETTINGS.startDistance;
+    }
 
-    // Skip initial frames for smoother animation
+    // skip initial frames for smoother animation
     simulation.tick(SIMULATION_SETTINGS.initialTicks);
-
-    simulationRef.current = simulation;
 
     // Initial update
     if (nodeContainer && linkContainer) {
-      updatePositions(
-        nodes,
-        links,
-        nodeContainer,
-        linkContainer,
-        theme === "dark"
-      );
+      updatePositions(nodes, links, nodeContainer, linkContainer);
     }
 
+    console.log("starting simulation for", graphData);
+
+    graphData.simulation = simulation;
+
     return () => {
+      if (stopTimer) clearTimeout(stopTimer);
+
       simulation.stop();
-      clearTimeout(stopTimer);
     };
   }, [
-    modifiedGraphData,
+    graphData,
     initialised,
     nodeContainer,
     linkContainer,

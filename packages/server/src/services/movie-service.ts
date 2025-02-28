@@ -9,7 +9,7 @@ import {
 } from "../api/tmdb";
 import * as movieQueries from "../database/movie-queries";
 import { MAX_PAGES, UPDATE_INTERVAL_SECS } from "../config";
-import type { Movie } from "../types";
+import type { Movie, Person } from "../types";
 import { getQualifiedMovies } from "../database/movie-queries";
 
 export async function addOrUpdateMovie(db: Database, movieId: number) {
@@ -113,7 +113,7 @@ export function processMovieData(db: Database): Movie[] {
 
       const people: Person[] = [];
 
-      const relevantRoles = ["Director", "Executive Producer", "Screenplay"];
+      const relevantRoles = ["Screenplay", "Writer"];
 
       people.push(
         ...crewData.crew
