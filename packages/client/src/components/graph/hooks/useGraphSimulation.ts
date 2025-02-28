@@ -29,8 +29,6 @@ export function useGraphSimulation(
 
     const { nodes, links } = graphData;
 
-    console.log("changed theme");
-
     createGraphElements(
       nodes,
       links,
@@ -51,8 +49,6 @@ export function useGraphSimulation(
 
   useEffect(() => {
     if (!initialised || !nodeContainer || !linkContainer) return;
-
-    console.log("run");
 
     if (simulationRef.current) {
       console.log("why bro");
@@ -134,19 +130,14 @@ export function useGraphSimulation(
       .alphaDecay(0)
       .on("tick", () => {
         updatePositions(nodes, links, nodeContainer, linkContainer);
-        // console.log(
-        //   nodes.slice(0, 1).map((node) => `x: ${node.x}, y: ${node.y}`)
-        // );
-        // console.log(nodes[0]);
 
         if (first) {
-          console.log("first");
           first = false;
+
           // Set timer to start decay after initial layout
+          // note: doing this here to avoid initialisation lag from cutting the time short
           stopTimer = setTimeout(() => {
             simulation.alphaDecay(SIMULATION_SETTINGS.alphaDecayValue);
-
-            console.log("finished", graphData);
           }, SIMULATION_SETTINGS.alphaDecayDelay);
         }
       });
@@ -165,8 +156,6 @@ export function useGraphSimulation(
     if (nodeContainer && linkContainer) {
       updatePositions(nodes, links, nodeContainer, linkContainer);
     }
-
-    console.log("starting simulation for", graphData);
 
     graphData.simulation = simulation;
 
