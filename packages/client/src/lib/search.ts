@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { GraphData, ShowNode } from "@show-graph/shared";
+import { GraphData, ShowNode } from "@/lib/types";
 
 export const initFuseSearch = (nodes: ShowNode[]) => {
   return new Fuse(nodes, {
@@ -26,6 +26,5 @@ export const performSearch = (
   const node = results[0].item;
   if (!node) return;
 
-  graphRef.centerAt(node.x, node.y, 200);
-  graphRef.zoom(1.5);
+  graphRef.centerAt(node.x, node.y, 1.35, 700);
 };

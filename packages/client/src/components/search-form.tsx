@@ -2,6 +2,7 @@ import React, { FormEvent, RefObject } from "react";
 import { Input } from "@/components/ui/input";
 import { GraphData } from "@/lib/types";
 import { performSearch } from "@/lib/search";
+import { ModeToggle } from "./mode-toggle";
 
 interface SearchFormProps {
   searchRef: RefObject<HTMLInputElement | null>;
@@ -16,6 +17,9 @@ const SearchForm: React.FC<SearchFormProps> = ({
 }) => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+
+    if (!graphRef.current) return;
+
     const query = searchRef.current?.value;
     if (!query) return;
 
