@@ -1,6 +1,6 @@
-import { Container, Graphics, Application } from "pixi.js";
-import { Viewport } from "pixi-viewport";
-import { GraphData } from "@/lib/types";
+import type { Container, Application } from "pixi.js";
+import type { Viewport } from "pixi-viewport";
+import type { GraphData } from "@/lib/types";
 
 export interface GraphProps {
   graphData: GraphData;

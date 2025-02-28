@@ -1,10 +1,10 @@
 import { Container, Graphics, Text, Circle } from "pixi.js";
 import { NODE_SIZE, MAX_ZOOM, stringToColor } from "../constants";
-import { ShowNode, LinkNode } from "@/lib/types";
+import type { GraphNode, LinkNode } from "@/lib/types";
 import { getNetworkColor } from "@/lib/networks";
 
 export function createGraphElements(
-  nodes: ShowNode[],
+  nodes: GraphNode[],
   links: LinkNode[],
   nodeContainer: Container,
   linkContainer: Container,
@@ -12,8 +12,15 @@ export function createGraphElements(
     showTooltip: (text: string, x: number, y: number) => void;
     moveTooltip: (x: number, y: number) => void;
     hideTooltip: () => void;
-  }
+  },
+  isDarkTheme: boolean
 ) {
+  // Theme-dependent colors
+  const textColor = isDarkTheme ? 0xffffff : 0x000000;
+  const linkColor = isDarkTheme ? 0x777777 : 0xbbbbbb;
+  const nodeStrokeColor = isDarkTheme ? 0xffffff : 0x222222;
+  const nodeStrokeAlpha = isDarkTheme ? 0.75 : 0.85;
+
   // Clear existing containers
   nodeContainer.removeChildren();
   linkContainer.removeChildren();
@@ -22,13 +29,14 @@ export function createGraphElements(
     getComputedStyle(document.body).getPropertyValue("--font-main") || "Arial";
 
   // Create links first (for better batching)
-  links.forEach(() => {
+  for (const _link of links) {
     const linkGraphics = new Graphics();
+    linkGraphics.stroke({ width: 1, color: linkColor });
     linkContainer.addChild(linkGraphics);
-  });
+  }
 
   // Create nodes
-  nodes.forEach((node) => {
+  for (const node of nodes) {
     const nodeItem = new Container();
 
     // Position the node if coordinates are available
@@ -40,32 +48,48 @@ export function createGraphElements(
     const radius = node.val * NODE_SIZE;
     const circle = new Graphics();
 
-    // Fill color based on node type
-    const fillColor =
-      node.type === "show"
-        ? node.networks && node.networks.length
-          ? stringToColor(getNetworkColor(node.networks[0]))
-          : 0xff6b6b
-        : 0x4ecdc4;
+    // Fill color based on node type, with theme consideration
+    let fillColor;
+    if (node.type === "show") {
+      if (node.topText?.length) {
+        // Apply theme-specific color adjustment to network colors
+        const baseColor = stringToColor(getNetworkColor(node.topText[0]));
+        console.log(node.name, baseColor);
+        fillColor = isDarkTheme
+          ? baseColor
+          : adjustColorBrightness(baseColor, -15);
+      } else {
+        fillColor = isDarkTheme ? 0xff6b6b : 0xff8080;
+      }
+    } else {
+      fillColor = isDarkTheme ? 0x4ecdc4 : 0x5ad8cf;
+    }
 
     // Draw circle
     circle.circle(0, 0, radius);
     circle.fill({ color: fillColor });
-    circle.stroke({ width: 2, color: 0xffffff, alpha: 0.75 });
+    circle.stroke({ width: 2, color: nodeStrokeColor, alpha: nodeStrokeAlpha });
     nodeItem.addChild(circle);
 
     // Add node label for show type
     if (node.type === "show") {
-      const label = createLabel(node.name || node.id, font, 0, radius + 3);
+      const label = createLabel(
+        node.name || node.id,
+        font,
+        0,
+        radius + 3,
+        textColor
+      );
       nodeItem.addChild(label);
 
       // Add network name if available
-      if (node.networks && node.networks.length) {
+      if (node.topText?.length) {
         const networkText = createLabel(
-          node.networks[0],
+          node.topText[0],
           font,
           0,
           -radius - 3,
+          textColor,
           true
         );
         nodeItem.addChild(networkText);
@@ -93,7 +117,23 @@ export function createGraphElements(
     });
 
     nodeContainer.addChild(nodeItem);
-  });
+  }
+}
+
+// Helper function to adjust color brightness
+function adjustColorBrightness(hexColor: number, percent: number): number {
+  // Convert hex to RGB
+  const r = (hexColor >> 16) & 0xff;
+  const g = (hexColor >> 8) & 0xff;
+  const b = hexColor & 0xff;
+
+  // Adjust brightness
+  const adjustR = Math.max(0, Math.min(255, r + (r * percent) / 100));
+  const adjustG = Math.max(0, Math.min(255, g + (g * percent) / 100));
+  const adjustB = Math.max(0, Math.min(255, b + (b * percent) / 100));
+
+  // Convert back to hex
+  return (adjustR << 16) + (adjustG << 8) + adjustB;
 }
 
 function createLabel(
@@ -101,6 +141,7 @@ function createLabel(
   fontFamily: string,
   x: number,
   y: number,
+  textColor: number,
   anchorTop = false
 ) {
   const label = new Text({
@@ -108,7 +149,7 @@ function createLabel(
     style: {
       fontFamily,
       fontSize: 8 * MAX_ZOOM, // render higher res text & downscale for sharp text https://pixijs.com/8.x/guides/components/text#caveats-and-gotchas
-      fill: 0xffffff,
+      fill: textColor,
       align: "center",
     },
   });
@@ -121,7 +162,7 @@ function createLabel(
 }
 
 export function updatePositions(
-  nodes: ShowNode[],
+  nodes: GraphNode[],
   links: LinkNode[],
   nodeContainerInput: Container,
   linkContainerInput: Container
@@ -167,6 +208,7 @@ export function updatePositions(
     linkGraphics.clear();
     linkGraphics.moveTo(source.x, source.y);
     linkGraphics.lineTo(target.x, target.y);
-    linkGraphics.stroke({ width: 1, color: 0x999999 });
+    // Use existing stroke settings (color is now managed by updateColors)
+    linkGraphics.stroke();
   }
 }

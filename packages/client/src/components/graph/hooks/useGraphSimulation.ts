@@ -1,13 +1,17 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { Container, Graphics } from "pixi.js";
 import { SIMULATION_SETTINGS } from "../constants";
-import { createGraphElements, updatePositions } from "./useGraphElements";
-import { ShowNode, LinkNode } from "@/lib/types";
+import {
+  createGraphElements,
+  updateColors,
+  updatePositions,
+} from "./useGraphElements";
+import { ShowNode, LinkNode, GraphData } from "@/lib/types";
+import { ComputedTheme, useTheme } from "@/components/theme-provider";
 
 export function useGraphSimulation(
-  nodes: ShowNode[],
-  links: LinkNode[],
+  graphDataRaw: GraphData,
   initialised: boolean,
   nodeContainer: Container | null,
   linkContainer: Container | null,
@@ -15,13 +19,48 @@ export function useGraphSimulation(
     showTooltip: (text: string, x: number, y: number) => void;
     moveTooltip: (x: number, y: number) => void;
     hideTooltip: () => void;
-  }
+  },
+  theme: ComputedTheme
 ) {
   const simulationRef = useRef<d3.Simulation<any, any> | null>(null);
 
+  const [modifiedGraphData, setModifiedGraphData] = useState({} as GraphData);
+
   useEffect(() => {
-    if (!initialised || !nodeContainer || !linkContainer || !nodes.length)
-      return;
+    setModifiedGraphData(structuredClone(graphDataRaw));
+  }, [graphDataRaw]);
+
+  useEffect(() => {
+    if (!initialised || !nodeContainer || !linkContainer) return;
+
+    const { nodes, links } = modifiedGraphData;
+
+    console.log("changed theme");
+
+    createGraphElements(
+      nodes,
+      links,
+      nodeContainer,
+      linkContainer,
+      tooltipHandlers,
+      theme === "dark"
+    );
+
+    updatePositions(
+      nodes,
+      links,
+      nodeContainer,
+      linkContainer,
+      theme === "dark"
+    );
+  }, [modifiedGraphData, theme]);
+
+  useEffect(() => {
+    if (!initialised || !nodeContainer || !linkContainer) return;
+
+    console.log("run");
+
+    const { nodes, links } = modifiedGraphData;
 
     // Clean up previous simulation
     if (simulationRef.current) {
@@ -34,7 +73,8 @@ export function useGraphSimulation(
       links,
       nodeContainer,
       linkContainer,
-      tooltipHandlers
+      tooltipHandlers,
+      theme === "dark"
     );
 
     // Calculate center force based on node connections
@@ -89,7 +129,13 @@ export function useGraphSimulation(
       .alphaDecay(0)
       .on("tick", () => {
         if (nodeContainer && linkContainer) {
-          updatePositions(nodes, links, nodeContainer, linkContainer);
+          updatePositions(
+            nodes,
+            links,
+            nodeContainer,
+            linkContainer,
+            theme === "dark"
+          );
         }
       });
 
@@ -105,7 +151,13 @@ export function useGraphSimulation(
 
     // Initial update
     if (nodeContainer && linkContainer) {
-      updatePositions(nodes, links, nodeContainer, linkContainer);
+      updatePositions(
+        nodes,
+        links,
+        nodeContainer,
+        linkContainer,
+        theme === "dark"
+      );
     }
 
     return () => {
@@ -113,8 +165,7 @@ export function useGraphSimulation(
       clearTimeout(stopTimer);
     };
   }, [
-    nodes,
-    links,
+    modifiedGraphData,
     initialised,
     nodeContainer,
     linkContainer,

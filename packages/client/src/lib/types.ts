@@ -1,10 +1,10 @@
-export interface ShowNode {
+export interface GraphNode {
   id: string;
   name: string;
-  type: "show" | "person";
   val: number;
-  networks?: string[];
+  type: "show" | "movie" | "album" | "person";
   groupLinks: number;
+  topText?: string[];
   vx?: number; // force graph adds this
   vy?: number; // force graph adds this
   x?: number; // force graph adds this
@@ -19,7 +19,7 @@ export interface LinkNode {
 }
 
 export interface GraphData {
-  nodes: ShowNode[];
+  nodes: GraphNode[];
   links: LinkNode[];
 }
 
@@ -32,6 +32,21 @@ export interface Person {
 export interface Show {
   id: string;
   title: string;
-  networks: string[];
+  year: number;
+  rating: number;
+  votes: number;
   people: Person[];
+  networks: string[];
 }
+
+export interface Movie {
+  id: string;
+  title: string;
+  year: number;
+  rating: number;
+  votes: number;
+  people: Person[];
+  production_companies: string[];
+}
+
+export type MediaType = "shows" | "movies" | "music";

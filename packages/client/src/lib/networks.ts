@@ -32,11 +32,9 @@ export function preloadNetworkLogos(
 }
 
 export function getNetworkColor(network: string): string {
-  const networkColors: Record<string, string> = {};
-
   const normalizedNetwork = network.toLowerCase();
 
-  if (normalizedNetwork in networkColors) {
+  if (normalizedNetwork in NETWORKS) {
     return NETWORKS[normalizedNetwork as keyof typeof NETWORKS].color;
   }
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Application, Graphics } from "pixi.js";
 import { Viewport } from "pixi-viewport";
 import { Container } from "pixi.js";
-import { GraphState, PixiRefs } from "../types";
+import type { GraphState, PixiRefs } from "../types";
 import { MIN_ZOOM, MAX_ZOOM, START_ZOOM } from "../constants";
 
 export function usePixiApp(

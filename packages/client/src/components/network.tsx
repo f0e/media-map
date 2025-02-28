@@ -1,12 +1,18 @@
-import React, { useRef, useState } from "react";
-import { useShowsData } from "@/lib/api";
+import type React from "react";
+import { useRef, useState } from "react";
 import SearchForm from "@/components/search-form";
 import Graph from "@/components/graph/graph";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { useMediaData, useShowsData } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { MIN_ZOOM } from "./graph/constants";
+import { MediaType } from "@/lib/types";
 
 const Network: React.FC = () => {
-  const { data: graphData, isLoading, error } = useShowsData();
+  const [activeMediaType, setActiveMediaType] = useState<MediaType>("shows");
+
+  const { data: graphData, isLoading, error } = useMediaData(activeMediaType);
+
   const [isGraphInitialized, setIsGraphInitialized] = useState(false);
 
   const graphRef = useRef<HTMLElement>(null);
@@ -15,10 +21,19 @@ const Network: React.FC = () => {
   // Combined loading state (either API data loading or graph initializing)
   const isLoaderVisible = isLoading || (graphData && !isGraphInitialized);
 
-  // Loading text based on the current phase
+  // Loading text based on the current phase and media type
   const loadingText = isLoading
-    ? "Loading show network data..."
-    : "Loading graph...";
+    ? `Loading ${activeMediaType} network data...`
+    : "Initializing visualization...";
+
+  const handleMediaTypeChange = (type: MediaType) => {
+    setActiveMediaType(type);
+    setIsGraphInitialized(false);
+
+    if (graphRef.current) {
+      graphRef.current.centerAt(0, 0, MIN_ZOOM, 500);
+    }
+  };
 
   if (error) {
     return (
@@ -27,7 +42,7 @@ const Network: React.FC = () => {
         <p>
           {error instanceof Error
             ? error.message
-            : "Failed to load shows. Please try again later."}
+            : `Failed to load ${activeMediaType}. Please try again later.`}
         </p>
       </div>
     );
@@ -44,24 +59,41 @@ const Network: React.FC = () => {
         <p>{loadingText}</p>
       </div>
 
-      {graphData && (
-        <>
-          {isGraphInitialized && (
-            <div className="animate-fade-in">
-              <SearchForm
-                searchRef={searchRef}
-                graphRef={graphRef}
-                graphData={graphData}
-              />
-            </div>
-          )}
+      <div className="fixed p-4 z-40">
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            {(["shows", "movies", "music"] as MediaType[]).map((type) => (
+              <Button
+                variant="custom"
+                key={type}
+                onClick={() => handleMediaTypeChange(type)}
+                className={cn(
+                  activeMediaType === type &&
+                    "bg-primary text-primary-foreground"
+                )}
+              >
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </Button>
+            ))}
+          </div>
 
-          <Graph
-            graphData={graphData}
-            graphRef={graphRef}
-            onInitialized={() => setIsGraphInitialized(true)}
-          />
-        </>
+          {!error && (
+            <SearchForm
+              searchRef={searchRef}
+              graphRef={graphRef}
+              graphData={graphData}
+            />
+          )}
+        </div>
+      </div>
+
+      {graphData && (
+        <Graph
+          graphData={graphData}
+          graphRef={graphRef}
+          mediaType={activeMediaType}
+          onInitialized={() => setIsGraphInitialized(true)}
+        />
       )}
     </>
   );

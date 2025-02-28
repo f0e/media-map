@@ -15,4 +15,4 @@ export const SIMULATION_SETTINGS = {
 };
 
 export const stringToColor = (color: string): number =>
-  parseInt(color.replace("#", "0x"));
+  Number.parseInt(color.replace("#", "0x"));
