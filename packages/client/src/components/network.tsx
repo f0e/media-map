@@ -1,39 +1,43 @@
 import type React from "react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { Link, useRouter } from "@tanstack/react-router";
 import SearchForm from "@/components/search-form";
 import Graph from "@/components/graph/graph";
 import { cn } from "@/lib/utils";
-import { useMediaData, useShowsData } from "@/lib/api";
+import { useMediaData } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { MIN_ZOOM } from "./graph/constants";
-import { MediaType } from "@/lib/types";
+import type { MediaType } from "@/lib/types";
 
-const Network: React.FC = () => {
-  const [activeMediaType, setActiveMediaType] = useState<MediaType>("shows");
+interface NetworkProps {
+  mediaType: MediaType;
+}
 
-  const { data: graphData, isLoading, error } = useMediaData(activeMediaType);
-
+const Network: React.FC<NetworkProps> = ({ mediaType }) => {
   const [isGraphInitialized, setIsGraphInitialized] = useState(false);
+  const router = useRouter();
+
+  const { data: graphData, isLoading, error } = useMediaData(mediaType);
 
   const graphRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  // Reset graph when media type changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: piss off
+  useEffect(() => {
+    setIsGraphInitialized(false);
+
+    // if (graphRef.current) {
+    //   graphRef.current.centerAt(0, 0, MIN_ZOOM, 500);
+    // }
+  }, [mediaType]);
 
   // Combined loading state (either API data loading or graph initialising)
   const isLoaderVisible = isLoading || (graphData && !isGraphInitialized);
 
   // Loading text based on the current phase and media type
   const loadingText = isLoading
-    ? `Loading ${activeMediaType} data...`
+    ? `Loading ${mediaType} data...`
     : "Initialising visualization...";
-
-  const handleMediaTypeChange = (type: MediaType) => {
-    setActiveMediaType(type);
-    setIsGraphInitialized(false);
-
-    if (graphRef.current) {
-      graphRef.current.centerAt(0, 0, MIN_ZOOM, 500);
-    }
-  };
 
   if (error) {
     return (
@@ -42,7 +46,7 @@ const Network: React.FC = () => {
         <p>
           {error instanceof Error
             ? error.message
-            : `Failed to load ${activeMediaType}. Please try again later.`}
+            : `Failed to load ${mediaType}. Please try again later.`}
         </p>
       </div>
     );
@@ -66,13 +70,15 @@ const Network: React.FC = () => {
               <Button
                 variant="custom"
                 key={type}
-                onClick={() => handleMediaTypeChange(type)}
+                asChild
                 className={cn(
-                  activeMediaType === type &&
+                  router.state.location.pathname === `/${type}` &&
                     "bg-primary text-primary-foreground"
                 )}
               >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
+                <Link to={`/${type}`}>
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </Link>
               </Button>
             ))}
           </div>
@@ -91,7 +97,7 @@ const Network: React.FC = () => {
         <Graph
           graphData={graphData}
           graphRef={graphRef}
-          mediaType={activeMediaType}
+          mediaType={mediaType}
           onInitialized={() => setIsGraphInitialized(true)}
         />
       )}

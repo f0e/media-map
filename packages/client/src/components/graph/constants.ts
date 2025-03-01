@@ -10,7 +10,7 @@ export const SIMULATION_SETTINGS = {
   linkDistance: 50,
   chargeStrength: -1000,
   initialTicks: 2,
-  alphaDecayDelay: 2300,
+  alphaDecayDelayTicks: 150,
   alphaDecayValue: 0.05,
   startDistance: 1000,
 };

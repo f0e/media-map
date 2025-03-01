@@ -57,9 +57,6 @@ export function useGraphSimulation(
 
     const { nodes, links } = graphData;
 
-    let first = true;
-    let stopTimer: Timer;
-
     // reset nodes
     for (const node of nodes) {
       node.x = Number.NaN; // "If either x or y is NaN, the position is initialized in a phyllotaxis arrangement, so chosen to ensure a deterministic, uniform distribution"
@@ -100,6 +97,9 @@ export function useGraphSimulation(
       return minForce + scale * (maxForce - minForce);
     };
 
+    let animating = true;
+    let tick = 0;
+
     // Create new simulation
     const simulation = d3
       .forceSimulation(nodes)
@@ -129,16 +129,14 @@ export function useGraphSimulation(
       .force("center", d3.forceCenter())
       .alphaDecay(0)
       .on("tick", () => {
+        tick++; // why should i have to keep track of this.
+
         updatePositions(nodes, links, nodeContainer, linkContainer);
 
-        if (first) {
-          first = false;
+        if (tick > SIMULATION_SETTINGS.alphaDecayDelayTicks && animating) {
+          animating = false;
 
-          // Set timer to start decay after initial layout
-          // note: doing this here to avoid initialisation lag from cutting the time short
-          stopTimer = setTimeout(() => {
-            simulation.alphaDecay(SIMULATION_SETTINGS.alphaDecayValue);
-          }, SIMULATION_SETTINGS.alphaDecayDelay);
+          simulation.alphaDecay(SIMULATION_SETTINGS.alphaDecayValue);
         }
       });
 
@@ -160,8 +158,6 @@ export function useGraphSimulation(
     graphData.simulation = simulation;
 
     return () => {
-      if (stopTimer) clearTimeout(stopTimer);
-
       simulation.stop();
     };
   }, [
