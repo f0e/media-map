@@ -147,9 +147,6 @@ export function useGraphSimulation(
       node.y = node.y! * SIMULATION_SETTINGS.startDistance;
     }
 
-    // skip initial frames for smoother animation
-    simulation.tick(SIMULATION_SETTINGS.initialTicks);
-
     // Initial update
     if (nodeContainer && linkContainer) {
       updatePositions(nodes, links, nodeContainer, linkContainer);
