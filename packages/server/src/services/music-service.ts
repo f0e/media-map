@@ -270,6 +270,7 @@ export async function getArtistCollaborationNetwork(
 	nodes.set(startingArtist.id.toString(), {
 		id: startingArtist.id.toString(),
 		label: startingArtist.name,
+		year: startingArtist.year,
 		topText: ["depth: 0"],
 		val: 1,
 		type: "music-artist",
@@ -302,7 +303,9 @@ export async function getArtistCollaborationNetwork(
         c.artist2_id, 
         c.collaboration_count,
         a1.name as artist1_name,
-        a2.name as artist2_name
+        a2.name as artist2_name,
+				NULLIF(a1.begin_date_year, 'NULL') AS artist1_year, -- todo, fix in db. the nulls are strings lol
+				NULLIF(a2.begin_date_year, 'NULL') AS artist2_year
       FROM music_collaborations c
       JOIN music_artists a1 ON c.artist1_id = a1.id
       JOIN music_artists a2 ON c.artist2_id = a2.id
@@ -330,6 +333,10 @@ export async function getArtistCollaborationNetwork(
 				collab.artist1_id === current.id
 					? collab.artist2_name
 					: collab.artist1_name;
+			const otherArtistYear =
+				collab.artist1_id === current.id
+					? collab.artist2_year
+					: collab.artist1_year;
 
 			// Create a hash for the link - more efficient than string concatenation
 			// Use a cantor pairing function for unique mapping of two integers to one
@@ -360,6 +367,7 @@ export async function getArtistCollaborationNetwork(
 				nodes.set(otherArtistId, {
 					id: otherArtistId,
 					label: otherArtistName,
+					year: otherArtistYear,
 					topText: [`depth: ${current.depth + 1}`],
 					val: 1,
 					type: "music-artist",

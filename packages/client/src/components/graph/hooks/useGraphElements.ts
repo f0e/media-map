@@ -72,13 +72,10 @@ export function createGraphElements(
 
 		// Add node label for show type
 		if (node.type !== "person") {
-			const label = createLabel(
-				`${node.label} (${node.year})`,
-				font,
-				0,
-				radius + 3,
-				textColor,
-			);
+			let labelText = node.label;
+			if (node.year) labelText += ` (${node.year})`;
+
+			const label = createLabel(labelText, font, 0, radius + 3, textColor);
 			nodeItem.addChild(label);
 
 			// Add network name if available
