@@ -1,6 +1,7 @@
-import React, { FormEvent, RefObject } from "react";
+import type React from "react";
+import type { FormEvent, RefObject } from "react";
 import { Input } from "@/components/ui/input";
-import { GraphData } from "@/lib/types";
+import type { GraphData } from "@/lib/types";
 import { performSearch } from "@/lib/search";
 import { ModeToggle } from "./mode-toggle";
 
@@ -27,7 +28,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
   };
 
   return (
-    <form className="absolute z-10 p-4 flex gap-2" onSubmit={handleSubmit}>
+    <form className="flex gap-2" onSubmit={handleSubmit}>
       {/* <ModeToggle /> */}
       <Input ref={searchRef} placeholder="Search" />
     </form>

@@ -11,6 +11,7 @@
 		"@show-graph/shared": "workspace:*",
 		"cheerio": "^1.0.0",
 		"dotenv": "^16.4.7",
+		"musicbrainz-api": "^0.21.0",
 		"numbro": "^2.5.0"
 	},
 	"devDependencies": {

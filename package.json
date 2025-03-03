@@ -8,5 +8,8 @@
   "scripts": {
     "client": "bun run --cwd packages/client dev",
     "server": "bun run --cwd packages/server dev"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "^1.112.0"
   }
 }
