@@ -11,10 +11,10 @@ import {
   getUnseenShows,
   insertOrUpdateShow,
   updateLastSeen,
+  getQualifiedShows,
 } from "../database/show-queries";
 import { MAX_PAGES, UPDATE_INTERVAL_SECS } from "../config";
 import type { Person, Show } from "../types";
-import { getQualifiedShows } from "../database/show-queries";
 
 export async function addOrUpdateShow(db: Database, showId: number) {
   // check if show exists and needs update

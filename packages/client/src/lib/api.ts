@@ -1,4 +1,4 @@
-import type { GraphData, MediaType, Movie, Show } from "@/lib/types";
+import type { Artist, GraphData, MediaType, Movie, Show } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 
 function calculateGroups(
@@ -82,6 +82,7 @@ function transformShows(shows: Show[]): GraphData {
         source: show.id,
         target: person.id,
         type: person.role,
+        value: 1,
       });
     }
   }
@@ -129,6 +130,7 @@ function transformMovies(movies: Movie[]): GraphData {
         source: movie.id,
         target: person.id,
         type: person.role,
+        value: 1,
       });
     }
   }
@@ -140,6 +142,53 @@ function transformMovies(movies: Movie[]): GraphData {
   for (const node of nodes) {
     node.groupLinks = groupMap.get(node.id) ?? 0;
   }
+
+  return { nodes, links };
+}
+
+function transformArtists(entries): GraphData {
+  const nodes: GraphData["nodes"] = [];
+  const links: GraphData["links"] = [];
+
+  console.log(entries);
+
+  const artistIds = new Set<string>(entries.nodes.map((node) => node.id));
+
+  console.log("nodes");
+
+  // Create nodes and links
+  for (const node of entries.nodes) {
+    nodes.push({
+      id: node.id,
+      name: node.name,
+      type: "music-artist",
+      val: 2,
+      groupLinks: 0,
+    });
+  }
+
+  console.log("links");
+
+  for (const link of entries.links) {
+    if (!artistIds.has(link.source) || !artistIds.has(link.target)) continue;
+
+    links.push({
+      source: link.source,
+      target: link.target,
+      type: "collaborator",
+      value: link.value,
+    });
+  }
+
+  console.log("done");
+
+  // // Calculate groups based on connectivity
+  // const groupMap = calculateGroups(nodes, links, artistIds);
+
+  // // Assign group size to each node
+  // for (const node of nodes) {
+  //   node.groupLinks = groupMap.get(node.id) ?? 0;
+  // }
 
   return { nodes, links };
 }
@@ -175,6 +224,25 @@ export const useMediaData = (mediaType: MediaType) => {
           const movies = await response.json();
 
           return transformMovies(movies);
+        },
+        staleTime: 5 * 60 * 1000, // 5 minutes
+      });
+    }
+
+    case "music-artists": {
+      return useQuery({
+        queryKey: ["artists"],
+        queryFn: async () => {
+          const response = await fetch(
+            "http://localhost:3001/api/music/artists"
+          );
+
+          if (!response.ok)
+            throw new Error(`Failed to fetch artists: ${response.status}`);
+
+          const artists = await response.json();
+
+          return transformArtists(artists);
         },
         staleTime: 5 * 60 * 1000, // 5 minutes
       });

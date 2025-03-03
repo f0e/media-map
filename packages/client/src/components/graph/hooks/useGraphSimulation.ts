@@ -75,10 +75,15 @@ export function useGraphSimulation(
       tooltipHandlers,
       theme === "dark"
     );
+
     // Calculate center force based on node connections
     const mostLinks = nodes.reduce((maxNode, currentNode) =>
       currentNode.groupLinks > maxNode.groupLinks ? currentNode : maxNode
     ).groupLinks;
+
+    const highestLinkValue = links.reduce((maxLink, currentLink) =>
+      currentLink.value > maxLink.value ? currentLink : maxLink
+    ).value;
 
     const getCenterForce = (links: number) => {
       // Clamp link count to a reasonable range
@@ -109,7 +114,12 @@ export function useGraphSimulation(
         d3
           .forceLink(links)
           .id((d: any) => d.id)
-          .distance(SIMULATION_SETTINGS.linkDistance)
+          .distance(
+            (d) =>
+              SIMULATION_SETTINGS.linkDistance +
+              ((highestLinkValue - d.value) / highestLinkValue) *
+                SIMULATION_SETTINGS.linkDistanceMult
+          )
       )
       // Push things towards the center based on group size
       .force(

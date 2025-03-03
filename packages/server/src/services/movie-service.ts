@@ -1,4 +1,3 @@
-// movie-service.ts
 import type { Database } from "bun:sqlite";
 import { getIMDBData } from "../api/imdb";
 import {
@@ -10,7 +9,6 @@ import {
 import * as movieQueries from "../database/movie-queries";
 import { MAX_PAGES, UPDATE_INTERVAL_SECS } from "../config";
 import type { Movie, Person } from "../types";
-import { getQualifiedMovies } from "../database/movie-queries";
 
 export async function addOrUpdateMovie(db: Database, movieId: number) {
   // check if movie exists and needs update
@@ -104,7 +102,7 @@ export async function updateMovieDatabase(db: Database) {
 
 export function processMovieData(db: Database): Movie[] {
   const movies: Movie[] = [];
-  const rows: any[] = getQualifiedMovies(db);
+  const rows: any[] = movieQueries.getQualifiedMovies(db);
 
   for (const row of rows) {
     try {

@@ -47,3 +47,10 @@ export interface Movie {
   people: Person[];
   production_companies: string[];
 }
+
+export interface Artist {
+  id: string;
+  name: string;
+  born: string;
+  collaborators: Artist[];
+}

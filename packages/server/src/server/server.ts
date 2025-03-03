@@ -6,6 +6,10 @@ import {
 } from "../services/music-service";
 import { processMovieData } from "../services/movie-service";
 import { processShowData } from "../services/show-service";
+import {
+  processArtistsData,
+  getArtistCollaborationNetwork,
+} from "../services/music-service";
 
 export function startServer(db: Database) {
   Bun.serve({
@@ -29,15 +33,16 @@ export function startServer(db: Database) {
       let res: Response;
 
       try {
-        // TV Shows endpoint
         if (path === "/api/shows") {
           const shows = processShowData(db);
           res = new Response(JSON.stringify(shows));
-        }
-        // Movies endpoint
-        else if (path === "/api/movies") {
+        } else if (path === "/api/movies") {
           const movies = processMovieData(db);
           res = new Response(JSON.stringify(movies));
+        } else if (path === "/api/music/artists") {
+          const artists = await getArtistCollaborationNetwork(db, "Ecco2K");
+
+          res = new Response(JSON.stringify(artists));
         }
         // // Music endpoints
         // else if (path.startsWith("/api/music/label/")) {

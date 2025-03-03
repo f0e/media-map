@@ -2,7 +2,7 @@ export interface GraphNode {
   id: string;
   name: string;
   val: number;
-  type: "show" | "movie" | "album" | "person";
+  type: "show" | "movie" | "music-artist" | "person";
   groupLinks: number;
   year?: number;
   topText?: string[];
@@ -17,6 +17,7 @@ export interface LinkNode {
   source: string;
   target: string;
   type: string;
+  value: number;
 }
 
 export interface GraphData {
@@ -51,4 +52,11 @@ export interface Movie {
   production_companies: string[];
 }
 
-export type MediaType = "shows" | "movies" | "music";
+export interface Artist {
+  id: string;
+  name: string;
+  born: string;
+  collaborators: string[];
+}
+
+export type MediaType = "shows" | "movies" | "music-artists";

@@ -1,134 +1,121 @@
 import type { Database } from "bun:sqlite";
+import type { IArtist } from "musicbrainz-api";
 
-export function insertOrUpdateAlbum(
+export function getArtistLastUpdate(
   db: Database,
-  albumId: string,
-  title: string,
-  artist: string,
-  label: string | null,
-  releaseYear: number | null,
-  genre: string | null,
-  featuredArtists: string[],
-  rating: number | null,
-  votes: number | null,
-  timestamp: number
-): void {
-  db.run(
+  artistId: string
+): { last_updated: number } | undefined {
+  return db
+    .query("SELECT last_updated FROM music_artists_raw WHERE id = ?")
+    .get(artistId) as { last_updated: number } | undefined;
+}
+
+export function getArtistCollaborators(
+  db: Database,
+  artistId: string
+): string[] {
+  const collaborators = db
+    .query(
+      `
+      SELECT collaborator_id 
+      FROM music_collaborations 
+      WHERE artist_id = ?
     `
-    INSERT OR REPLACE INTO music_albums_raw 
-    (id, title, artist, label, release_year, genre, featured_artists, rating, votes, last_updated, last_seen)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `,
-    [
-      albumId,
-      title,
-      artist,
-      label,
-      releaseYear,
-      genre,
-      JSON.stringify(featuredArtists),
-      rating,
-      votes,
-      timestamp,
-      timestamp,
-    ]
-  );
+    )
+    .all(artistId) as { collaborator_id: string }[];
+
+  return collaborators.map((row) => row.collaborator_id);
 }
 
 export function insertOrUpdateArtist(
   db: Database,
-  artistId: string,
-  name: string,
-  bio: string | null,
-  genre: string | null,
-  formedYear: number | null,
-  label: string | null,
-  rating: number | null,
+  musicbrainzData: IArtist,
+  collaborators: string[]
+): void {
+  const now = Date.now();
+
+  // Begin a transaction to ensure all operations complete together
+  db.exec("BEGIN TRANSACTION");
+
+  try {
+    // Insert or update the artist record
+    db.run(
+      `
+      INSERT OR REPLACE INTO music_artists_raw 
+      (id, musicbrainz_data, last_updated, last_seen)
+      VALUES (?, ?, ?, ?)
+      `,
+      [musicbrainzData.id, JSON.stringify(musicbrainzData), now, now]
+    );
+
+    // First, remove existing collaborations for this artist
+    // to avoid duplicates when we re-add them
+    db.run("DELETE FROM music_collaborations WHERE artist_id = ?", [
+      musicbrainzData.id,
+    ]);
+
+    // Insert all collaborations
+    if (collaborators.length > 0) {
+      // Prepare the statement once for efficiency
+      const stmt = db.prepare(
+        "INSERT INTO music_collaborations (artist_id, collaborator_id) VALUES (?, ?)"
+      );
+
+      for (const collaboratorId of collaborators) {
+        // Fix: Pass parameters directly, not as an array
+        stmt.run(musicbrainzData.id, collaboratorId);
+      }
+
+      // Finalize the prepared statement
+      stmt.finalize();
+    }
+
+    // Commit the transaction
+    db.exec("COMMIT");
+  } catch (error) {
+    // If anything fails, roll back the entire transaction
+    db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
+export function updateMusicLastSeen(
+  db: Database,
+  musicId: number,
   timestamp: number
 ): void {
   db.run(
-    `
-    INSERT OR REPLACE INTO music_artists_raw 
-    (id, name, bio, genre, formed_year, label, rating, last_updated, last_seen)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `UPDATE musics_raw 
+     SET last_seen = ? 
+     WHERE id = ?
     `,
-    [
-      artistId,
-      name,
-      bio,
-      genre,
-      formedYear,
-      label,
-      rating,
-      timestamp,
-      timestamp,
-    ]
+    [timestamp, musicId]
   );
 }
 
-export function insertOrUpdateLabel(
-  db: Database,
-  labelId: string,
-  name: string,
-  foundedYear: number | null,
-  headquarters: string | null,
-  parentCompany: string | null,
-  timestamp: number
-): void {
-  db.run(
-    `
-    INSERT OR REPLACE INTO music_labels_raw 
-    (id, name, founded_year, headquarters, parent_company, last_updated, last_seen)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-    `,
-    [
-      labelId,
-      name,
-      foundedYear,
-      headquarters,
-      parentCompany,
-      timestamp,
-      timestamp,
-    ]
-  );
-}
-
-export function getAlbumsByLabel(db: Database, labelName: string): any[] {
+export function getQualifiedArtists(db: Database): any[] {
   return db
     .query(
       `
-      SELECT * FROM music_albums_raw 
-      WHERE label = ?
-      ORDER BY release_year DESC, title
+      SELECT * FROM music_artists
     `
     )
-    .all(labelName);
+    .all();
 }
 
-export function getAlbumsByFeaturedArtist(
+export function getUnseenMusics(
   db: Database,
-  artistName: string
-): any[] {
-  throw "todo";
-  // return db
-  //   .query(
-  //     `
-  //     SELECT * FROM music_albums_raw
-  //     WHERE json_array_contains(featured_artists, ?)
-  //     ORDER BY release_year DESC, title
-  //   `
-  //   )
-  //   .all(artistName);
-}
-
-export function getArtistsByLabel(db: Database, labelName: string): any[] {
+  now: number,
+  updateInterval: number
+): number[] {
   return db
     .query(
-      `
-      SELECT * FROM music_artists_raw 
-      WHERE label = ?
-      ORDER BY name
+      `SELECT id
+      FROM musics_raw
+      WHERE last_seen < ?
+      AND last_updated < ?
     `
     )
-    .all(labelName);
+    .all(now, now - updateInterval * 1000)
+    .map((row: any) => row.id);
 }

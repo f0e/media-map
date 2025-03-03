@@ -25,8 +25,8 @@ const moviesRoute = createRoute({
 
 const musicRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/music",
-  component: () => <Network mediaType="music" />,
+  path: "/music/artists",
+  component: () => <Network mediaType="music-artists" />,
 });
 
 // Create a catch-all index route that redirects to shows

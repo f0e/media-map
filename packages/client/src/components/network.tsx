@@ -66,21 +66,23 @@ const Network: React.FC<NetworkProps> = ({ mediaType }) => {
       <div className="fixed p-4 z-40">
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
-            {(["shows", "movies", "music"] as MediaType[]).map((type) => (
-              <Button
-                variant="custom"
-                key={type}
-                asChild
-                className={cn(
-                  router.state.location.pathname === `/${type}` &&
-                    "bg-primary text-primary-foreground"
-                )}
-              >
-                <Link to={`/${type}`}>
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </Link>
-              </Button>
-            ))}
+            {(["shows", "movies", "music/artists"] as MediaType[]).map(
+              (type) => (
+                <Button
+                  variant="custom"
+                  key={type}
+                  asChild
+                  className={cn(
+                    router.state.location.pathname === `/${type}` &&
+                      "bg-primary text-primary-foreground"
+                  )}
+                >
+                  <Link to={`/${type}`}>
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </Link>
+                </Button>
+              )
+            )}
           </div>
 
           {!error && (
