@@ -1,56 +1,56 @@
-export interface ShowNode {
-  id: string;
-  name: string;
-  type: "show" | "person";
-  val: number;
-  networks?: string[];
-  vx?: number; // force graph adds this
-  vy?: number; // force graph adds this
-  x?: number; // force graph adds this
-  y?: number; // force graph adds this
-  __indexColor?: string; // force graph adds this
+export interface GraphNode {
+	id: string;
+	label: string;
+	val: number;
+	type: "show" | "movie" | "music-artist" | "person";
+	groupLinks: number;
+	year?: number;
+	topText?: string[];
+	x?: number;
+	y?: number;
 }
 
-export interface LinkNode {
-  source: string;
-  target: string;
-  type: string;
+export interface Link {
+	source: string;
+	target: string;
+	type: string;
+	value?: number;
 }
 
 export interface GraphData {
-  nodes: ShowNode[];
-  links: LinkNode[];
+	nodes: GraphNode[];
+	links: Link[];
 }
 
 export interface Person {
-  id: string;
-  name: string;
-  role: string;
+	id: string;
+	name: string;
+	type: string;
 }
 
 export interface Show {
-  id: string;
-  title: string;
-  year: number;
-  rating: number;
-  votes: number;
-  people: Person[];
-  networks: string[];
+	id: string;
+	title: string;
+	year: number;
+	rating: number;
+	votes: number;
+	networks: string[];
+	type: string;
 }
 
 export interface Movie {
-  id: string;
-  title: string;
-  year: number;
-  rating: number;
-  votes: number;
-  people: Person[];
-  production_companies: string[];
+	id: string;
+	title: string;
+	year: number;
+	rating: number;
+	votes: number;
+	people: Person[];
+	production_companies: string[];
 }
 
 export interface Artist {
-  id: string;
-  name: string;
-  born: string;
-  collaborators: Artist[];
+	id: string;
+	name: string;
+	born: string;
+	collaborators: Artist[];
 }

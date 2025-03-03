@@ -2,7 +2,14 @@
 import type { Database } from "bun:sqlite";
 import * as musicQueries from "../database/music-queries";
 import { MAX_PAGES, UPDATE_INTERVAL_SECS } from "../config";
-import type { Artist, Music, Person } from "../types";
+import type {
+	Artist,
+	GraphData,
+	GraphNode,
+	Link,
+	Music,
+	Person,
+} from "../types";
 import mb from "../api/musicbrainz";
 import { getMonthlyListeners } from "../api/lastfm";
 
@@ -243,29 +250,16 @@ export async function musicTest(db: Database) {
 export async function getArtistCollaborationNetwork(
 	db: Database,
 	artistName: string,
-	maxDepth: number = 2,
+	maxDepth = 1,
 ) {
-	// Define return types
-	type Node = {
-		id: number;
-		name: string;
-		depth: number;
-	};
-
-	type Link = {
-		source: number;
-		target: number;
-		value: number; // collaboration count
-	};
-
-	const nodes: Map<number, Node> = new Map();
+	const nodes: Map<string, GraphNode> = new Map();
 	const links: Link[] = [];
 	// Using a more efficient Set for tracking processed pairs
-	const processedLinks: Set<number> = new Set();
+	const processedLinks: Set<string> = new Set();
 
 	// Find the starting artist
-	const startingArtist = db
-		.query(`SELECT id, name FROM music_artists WHERE name = $name LIMIT 1`)
+	const startingArtist: any = db
+		.query("SELECT id, name FROM music_artists WHERE name = $name LIMIT 1")
 		.get({ $name: artistName });
 
 	if (!startingArtist) {
@@ -273,10 +267,13 @@ export async function getArtistCollaborationNetwork(
 	}
 
 	// Add starting artist to nodes
-	nodes.set(startingArtist.id, {
-		id: startingArtist.id,
-		name: startingArtist.name,
-		depth: 0,
+	nodes.set(startingArtist.id.toString(), {
+		id: startingArtist.id.toString(),
+		label: startingArtist.name,
+		topText: ["depth: 0"],
+		val: 1,
+		type: "music-artist",
+		groupLinks: 0,
 	});
 
 	// Queue for BFS
@@ -297,7 +294,7 @@ export async function getArtistCollaborationNetwork(
 		}
 
 		// Get all collaborators
-		const collaborations = db
+		const collaborations: any[] = db
 			.query(
 				`
       SELECT 
@@ -327,8 +324,8 @@ export async function getArtistCollaborationNetwork(
 
 			const otherArtistId =
 				collab.artist1_id === current.id
-					? collab.artist2_id
-					: collab.artist1_id;
+					? collab.artist2_id.toString()
+					: collab.artist1_id.toString();
 			const otherArtistName =
 				collab.artist1_id === current.id
 					? collab.artist2_name
@@ -338,15 +335,16 @@ export async function getArtistCollaborationNetwork(
 			// Use a cantor pairing function for unique mapping of two integers to one
 			const a = Math.min(current.id, otherArtistId);
 			const b = Math.max(current.id, otherArtistId);
-			const pairHash = ((a + b) * (a + b + 1)) / 2 + b;
+			const pairHash = `${a}-${b}`; // ((a + b) * (a + b + 1)) / 2 + b;
 
 			if (!processedLinks.has(pairHash)) {
 				processedLinks.add(pairHash);
 
 				// Add link
 				links.push({
-					source: current.id,
-					target: otherArtistId,
+					source: current.id.toString(),
+					target: otherArtistId.toString(),
+					type: "collaborator",
 					value: collab.collaboration_count,
 				});
 			}
@@ -361,8 +359,11 @@ export async function getArtistCollaborationNetwork(
 				// Add to nodes
 				nodes.set(otherArtistId, {
 					id: otherArtistId,
-					name: otherArtistName,
-					depth: current.depth + 1,
+					label: otherArtistName,
+					topText: [`depth: ${current.depth + 1}`],
+					val: 1,
+					type: "music-artist",
+					groupLinks: 0,
 				});
 			}
 		}
@@ -377,8 +378,8 @@ export async function getArtistCollaborationNetwork(
 	};
 }
 
-export function getAllArtists(db: Database): Artist[] {
-	const artists = db
+export function getAllArtists(db: Database): GraphData {
+	const artists: any[] = db
 		.query(
 			`SELECT ma.*
 FROM music_artists ma
@@ -387,92 +388,39 @@ FROM music_artists ma
 		.all();
 
 	// Fetch all collaborations
-	const collaborations = db
+	const collaborations: any[] = db
 		.query(
 			"SELECT artist1_id, artist2_id, collaboration_count FROM music_collaborations",
 		)
 		.all();
 
 	// Convert artists to nodes
-	const nodes = artists.map((artist) => ({
-		id: artist.id,
-		name: artist.name,
-	}));
+	const nodes: GraphNode[] = artists.map(
+		(artist): GraphNode => ({
+			id: artist.id,
+			label: artist.name,
+			val: 1,
+			type: "music-artist",
+			groupLinks: 0,
+		}),
+	);
 
 	const artistIds = new Set<string>(nodes.map((node) => node.id));
 
 	// Convert collaborations to links
-	const links = collaborations
+	const links: Link[] = collaborations
 		.filter(
 			(collab) =>
 				artistIds.has(collab.artist1_id) && artistIds.has(collab.artist2_id),
 		)
-		.map((collab) => ({
-			source: collab.artist1_id,
-			target: collab.artist2_id,
-			weight: collab.collaboration_count,
-		}));
+		.map(
+			(collab): Link => ({
+				source: collab.artist1_id,
+				target: collab.artist2_id,
+				type: "collaborator",
+				// weight: collab.collaboration_count,
+			}),
+		);
 
 	return { nodes, links };
-
-	// const rawArtists = musicQueries.getQualifiedArtists(db);
-	// const artistMap = new Map<string, Artist>();
-
-	// // First pass: Create all artist objects without collaborators
-	// for (const rawArtist of rawArtists) {
-	//   try {
-	//     const artist: Artist = {
-	//       id: rawArtist.id,
-	//       name: musicbrainzData.name || "Unknown",
-	//       born: musicbrainzData["life-span"]?.begin,
-	//       collaborators: [],
-	//     };
-
-	//     artistMap.set(artist.id, artist);
-	//   } catch (error) {
-	//     console.error(
-	//       `Error processing artist data for ID ${rawArtist.id}:`,
-	//       error
-	//     );
-	//   }
-	// }
-
-	// // Create a map to count collaborations for each artist
-	// const collaborationCountMap = new Map<string, Set<string>>();
-
-	// // Second pass: Get collaborators for each artist and build the count map
-	// for (const rawArtist of rawArtists) {
-	//   const artist = artistMap.get(rawArtist.id);
-	//   if (!artist) continue;
-
-	//   // Get the collaborator IDs using the existing function
-	//   const collaboratorIds = musicQueries.getArtistCollaborators(
-	//     db,
-	//     rawArtist.id
-	//   );
-
-	//   // Add each collaborator to the artist's collaborators array
-	//   for (const collaboratorId of collaboratorIds) {
-	//     const collaborator = artistMap.get(collaboratorId);
-	//     if (collaborator) {
-	//       artist.collaborators.push(collaborator);
-
-	//       // Track collaborations for filtering
-	//       if (!collaborationCountMap.has(collaboratorId)) {
-	//         collaborationCountMap.set(collaboratorId, new Set());
-	//       }
-	//       collaborationCountMap.get(collaboratorId)?.add(rawArtist.id);
-	//     }
-	//   }
-	// }
-
-	// // Filter artists to only include those with collaborators who have multiple collaborations
-	// const filteredArtists = Array.from(artistMap.values()).filter((artist) => {
-	//   return artist.collaborators.some((collaborator) => {
-	//     const collaboratorArtists = collaborationCountMap.get(collaborator.id);
-	//     return collaboratorArtists && collaboratorArtists.size > 1;
-	//   });
-	// });
-
-	// return filteredArtists;
 }

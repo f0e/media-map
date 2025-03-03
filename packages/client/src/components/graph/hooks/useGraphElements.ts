@@ -1,11 +1,11 @@
 import { Container, Graphics, Text, Circle } from "pixi.js";
 import { NODE_SIZE, MAX_ZOOM, stringToColor } from "../constants";
-import type { GraphNode, LinkNode } from "@/lib/types";
+import type { GraphNode, Link } from "@/lib/types";
 import { getNetworkColor } from "@/lib/networks";
 
 export function createGraphElements(
 	nodes: GraphNode[],
-	links: LinkNode[],
+	links: Link[],
 	nodeContainer: Container,
 	linkContainer: Container,
 	tooltipHandlers: {
@@ -73,7 +73,7 @@ export function createGraphElements(
 		// Add node label for show type
 		if (node.type !== "person") {
 			const label = createLabel(
-				`${node.name} (${node.year})`,
+				`${node.label} (${node.year})`,
 				font,
 				0,
 				radius + 3,
@@ -104,7 +104,7 @@ export function createGraphElements(
 
 		// Setup event handlers
 		nodeItem.on("pointerover", (e) => {
-			tooltipHandlers.showTooltip(node.name, e.clientX, e.clientY);
+			tooltipHandlers.showTooltip(node.label, e.clientX, e.clientY);
 		});
 
 		nodeItem.on("pointermove", (e) => {
@@ -162,7 +162,7 @@ function createLabel(
 
 export function updatePositions(
 	nodes: GraphNode[],
-	links: LinkNode[],
+	links: Link[],
 	nodeContainerInput: Container,
 	linkContainerInput: Container,
 ) {

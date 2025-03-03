@@ -1,16 +1,10 @@
 import type { Database } from "bun:sqlite";
 import { SERVER_PORT } from "../config";
-import {
-	fetchAlbumsByLabel,
-	fetchAlbumsByFeaturedArtist,
-	getAllArtists,
-} from "../services/music-service";
-import { processMovieData } from "../services/movie-service";
-import { processShowData } from "../services/show-service";
-import {
-	processArtistsData,
-	getArtistCollaborationNetwork,
-} from "../services/music-service";
+import { processMovieData as getMovieNetwork } from "../services/movie-service";
+import { getShowNetwork } from "../services/show-service";
+import { getArtistCollaborationNetwork } from "../services/music-service";
+import { processGraph } from "../services/graph";
+import type { Graph } from "../types";
 
 export function startServer(db: Database) {
 	Bun.serve({
@@ -35,66 +29,23 @@ export function startServer(db: Database) {
 			let res: Response;
 
 			try {
+				let graphData: GraphData | null = null;
+
 				if (path === "/api/shows") {
-					const shows = processShowData(db);
-					res = new Response(JSON.stringify(shows));
+					graphData = getShowNetwork(db);
 				} else if (path === "/api/movies") {
-					const movies = processMovieData(db);
-					res = new Response(JSON.stringify(movies));
+					graphData = getMovieNetwork(db);
 				} else if (path === "/api/music/artists") {
-					const artistsTemp = await getArtistCollaborationNetwork(db, "Bladee");
-
-					const artists = {
-						nodes: artistsTemp.nodes.map((node) => ({
-							...node,
-							id: node.id.toString(),
-						})),
-
-						links: artistsTemp.links.map((node) => ({
-							...node,
-							source: node.source.toString(),
-							target: node.target.toString(),
-						})),
-					};
-
-					const positionsRes = await fetch(
-						"http://localhost:8000/api/generate",
-						{
-							method: "POST",
-							body: JSON.stringify(artists),
-						},
-					);
-
-					const positionsData = await positionsRes.json();
-
-					for (const node of artists.nodes) {
-						node.x = positionsData.positions[node.id].x * 50;
-						node.y = positionsData.positions[node.id].y * 50;
-					}
-
-					res = new Response(
-						JSON.stringify({
-							...artists,
-						}),
-					);
-				}
-				// // Music endpoints
-				// else if (path.startsWith("/api/music/label/")) {
-				//   const labelName = decodeURIComponent(
-				//     path.replace("/api/music/label/", "")
-				//   );
-				//   const albums = await fetchAlbumsByLabel(db, labelName);
-				//   res = new Response(JSON.stringify(albums));
-				// } else if (path.startsWith("/api/music/featured-artist/")) {
-				//   const artistName = decodeURIComponent(
-				//     path.replace("/api/music/featured-artist/", "")
-				//   );
-				//   const albums = await fetchAlbumsByFeaturedArtist(db, artistName);
-				//   res = new Response(JSON.stringify(albums));
-				else {
+					graphData = await getArtistCollaborationNetwork(db, "Bladee");
+				} else {
 					res = new Response(JSON.stringify({ error: "Not found" }), {
 						status: 404,
 					});
+				}
+
+				if (graphData) {
+					graphData = await processGraph(graphData);
+					res = new Response(JSON.stringify(graphData));
 				}
 			} catch (error) {
 				console.error("API Error:", error);
