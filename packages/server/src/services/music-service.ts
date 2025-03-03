@@ -281,7 +281,7 @@ export async function getArtistCollaborationNetwork(
 	const queue: Array<{ id: number; depth: number }> = [
 		{ id: startingArtist.id, depth: 0 },
 	];
-	const visited: Set<number> = new Set([startingArtist.id]);
+	const visited = new Set<string>([startingArtist.id.toString()]);
 
 	const lastfmListeners = new Map<number, number>();
 
