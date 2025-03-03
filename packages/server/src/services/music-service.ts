@@ -163,143 +163,143 @@ import { getMonthlyListeners } from "../api/lastfm";
 // }
 
 export async function getArtistCollaboratorIds(
-  artistId: string
+	artistId: string,
 ): Promise<Set<string>> {
-  const query = `arid:${artistId} AND creditname:*`;
+	const query = `arid:${artistId} AND creditname:*`;
 
-  const collaborators = new Set<string>();
-  let offset = 0;
+	const collaborators = new Set<string>();
+	let offset = 0;
 
-  while (true) {
-    const searchResults = await mb.search("recording", { query, offset });
-    console.log(searchResults);
+	while (true) {
+		const searchResults = await mb.search("recording", { query, offset });
+		console.log(searchResults);
 
-    if (!searchResults.recordings) {
-      console.log(artistId, "has no collaborators?");
+		if (!searchResults.recordings) {
+			console.log(artistId, "has no collaborators?");
 
-      return collaborators;
-    }
+			return collaborators;
+		}
 
-    for (const res of searchResults.recordings) {
-      const releaseArtists = res["artist-credit"];
-      if (!releaseArtists) continue;
+		for (const res of searchResults.recordings) {
+			const releaseArtists = res["artist-credit"];
+			if (!releaseArtists) continue;
 
-      for (const releaseArtist of releaseArtists) {
-        if (releaseArtist.artist.id === artistId) continue;
-        if (collaborators.has(releaseArtist.artist.id)) continue;
+			for (const releaseArtist of releaseArtists) {
+				if (releaseArtist.artist.id === artistId) continue;
+				if (collaborators.has(releaseArtist.artist.id)) continue;
 
-        collaborators.add(releaseArtist.artist.id);
-        console.log(`\t${releaseArtist.name}`);
-      }
-    }
+				collaborators.add(releaseArtist.artist.id);
+				console.log(`\t${releaseArtist.name}`);
+			}
+		}
 
-    offset += searchResults.recordings.length;
+		offset += searchResults.recordings.length;
 
-    if (offset === searchResults.count) return collaborators;
-  }
+		if (offset === searchResults.count) return collaborators;
+	}
 }
 
 export async function musicTest(db: Database) {
-  const queue = ["cd689e77-dfdd-4f81-b50c-5e5a3f5e38a4"];
-  const been = new Set<string>();
+	const queue = ["cd689e77-dfdd-4f81-b50c-5e5a3f5e38a4"];
+	const been = new Set<string>();
 
-  while (queue.length > 0) {
-    const entry = queue.shift();
-    if (!entry) break; // dumb typescript
+	while (queue.length > 0) {
+		const entry = queue.shift();
+		if (!entry) break; // dumb typescript
 
-    been.add(entry);
+		been.add(entry);
 
-    let collaboratorIds = [];
+		let collaboratorIds = [];
 
-    const lastSeen = musicQueries.getArtistLastUpdate(db, entry);
-    if (lastSeen) {
-      // todo
-      collaboratorIds = musicQueries.getArtistCollaborators(db, entry);
-      console.log("seen");
-    } else {
-      const musicbrainzData = await mb.lookup("artist", entry);
-      console.log("getting", musicbrainzData.name, "collaborators");
+		const lastSeen = musicQueries.getArtistLastUpdate(db, entry);
+		if (lastSeen) {
+			// todo
+			collaboratorIds = musicQueries.getArtistCollaborators(db, entry);
+			console.log("seen");
+		} else {
+			const musicbrainzData = await mb.lookup("artist", entry);
+			console.log("getting", musicbrainzData.name, "collaborators");
 
-      collaboratorIds = [...(await getArtistCollaboratorIds(entry))];
+			collaboratorIds = [...(await getArtistCollaboratorIds(entry))];
 
-      console.log("new");
+			console.log("new");
 
-      musicQueries.insertOrUpdateArtist(db, musicbrainzData, collaboratorIds);
-    }
+			musicQueries.insertOrUpdateArtist(db, musicbrainzData, collaboratorIds);
+		}
 
-    console.log(collaboratorIds);
+		console.log(collaboratorIds);
 
-    for (const collaboratorId of collaboratorIds) {
-      if (queue.includes(collaboratorId)) continue;
-      if (been.has(collaboratorId)) continue;
+		for (const collaboratorId of collaboratorIds) {
+			if (queue.includes(collaboratorId)) continue;
+			if (been.has(collaboratorId)) continue;
 
-      queue.push(collaboratorId);
-    }
-  }
+			queue.push(collaboratorId);
+		}
+	}
 
-  console.log("queue done?");
+	console.log("queue done?");
 }
 
 export async function getArtistCollaborationNetwork(
-  db: Database,
-  artistName: string,
-  maxDepth: number = 3
+	db: Database,
+	artistName: string,
+	maxDepth: number = 2,
 ) {
-  // Define return types
-  type Node = {
-    id: number;
-    name: string;
-    depth: number;
-  };
+	// Define return types
+	type Node = {
+		id: number;
+		name: string;
+		depth: number;
+	};
 
-  type Link = {
-    source: number;
-    target: number;
-    value: number; // collaboration count
-  };
+	type Link = {
+		source: number;
+		target: number;
+		value: number; // collaboration count
+	};
 
-  const nodes: Map<number, Node> = new Map();
-  const links: Link[] = [];
-  // Using a more efficient Set for tracking processed pairs
-  const processedLinks: Set<number> = new Set();
+	const nodes: Map<number, Node> = new Map();
+	const links: Link[] = [];
+	// Using a more efficient Set for tracking processed pairs
+	const processedLinks: Set<number> = new Set();
 
-  // Find the starting artist
-  const startingArtist = db
-    .query(`SELECT id, name FROM music_artists WHERE name = $name LIMIT 1`)
-    .get({ $name: artistName });
+	// Find the starting artist
+	const startingArtist = db
+		.query(`SELECT id, name FROM music_artists WHERE name = $name LIMIT 1`)
+		.get({ $name: artistName });
 
-  if (!startingArtist) {
-    return { nodes: [], links: [] };
-  }
+	if (!startingArtist) {
+		return { nodes: [], links: [] };
+	}
 
-  // Add starting artist to nodes
-  nodes.set(startingArtist.id, {
-    id: startingArtist.id,
-    name: startingArtist.name,
-    depth: 0,
-  });
+	// Add starting artist to nodes
+	nodes.set(startingArtist.id, {
+		id: startingArtist.id,
+		name: startingArtist.name,
+		depth: 0,
+	});
 
-  // Queue for BFS
-  const queue: Array<{ id: number; depth: number }> = [
-    { id: startingArtist.id, depth: 0 },
-  ];
-  const visited: Set<number> = new Set([startingArtist.id]);
+	// Queue for BFS
+	const queue: Array<{ id: number; depth: number }> = [
+		{ id: startingArtist.id, depth: 0 },
+	];
+	const visited: Set<number> = new Set([startingArtist.id]);
 
-  const lastfmListeners = new Map<number, number>();
+	const lastfmListeners = new Map<number, number>();
 
-  // BFS to find all artists up to maxDepth
-  while (queue.length > 0) {
-    const current = queue.shift()!;
+	// BFS to find all artists up to maxDepth
+	while (queue.length > 0) {
+		const current = queue.shift()!;
 
-    // Skip if we've reached max depth
-    if (current.depth >= maxDepth) {
-      continue;
-    }
+		// Skip if we've reached max depth
+		if (current.depth >= maxDepth) {
+			continue;
+		}
 
-    // Get all collaborators
-    const collaborations = db
-      .query(
-        `
+		// Get all collaborators
+		const collaborations = db
+			.query(
+				`
       SELECT 
         c.artist1_id, 
         c.artist2_id, 
@@ -310,172 +310,169 @@ export async function getArtistCollaborationNetwork(
       JOIN music_artists a1 ON c.artist1_id = a1.id
       JOIN music_artists a2 ON c.artist2_id = a2.id
       WHERE c.artist1_id = $id OR c.artist2_id = $id
-    `
-      )
-      .all({ $id: current.id });
+    `,
+			)
+			.all({ $id: current.id });
 
-    for (const collab of collaborations) {
-      // let listeners = lastfmListeners.get(collab.artist2_id);
-      // if (!listeners) {
-      //   listeners = await getMonthlyListeners(collab.artist2_name);
-      //   lastfmListeners.set(collab.artist2_id, listeners);
-      // }
-      // if (listeners < 10000 || listeners > 1000000) {
-      //   console.log(collab.artist2_name, "under 100k/over 1m, skipping");
-      //   continue;
-      // }
+		for (const collab of collaborations) {
+			// let listeners = lastfmListeners.get(collab.artist2_id);
+			// if (!listeners) {
+			//   listeners = await getMonthlyListeners(collab.artist2_name);
+			//   lastfmListeners.set(collab.artist2_id, listeners);
+			// }
+			// if (listeners < 10000 || listeners > 1000000) {
+			//   console.log(collab.artist2_name, "under 100k/over 1m, skipping");
+			//   continue;
+			// }
 
-      const otherArtistId =
-        collab.artist1_id === current.id
-          ? collab.artist2_id
-          : collab.artist1_id;
-      const otherArtistName =
-        collab.artist1_id === current.id
-          ? collab.artist2_name
-          : collab.artist1_name;
+			const otherArtistId =
+				collab.artist1_id === current.id
+					? collab.artist2_id
+					: collab.artist1_id;
+			const otherArtistName =
+				collab.artist1_id === current.id
+					? collab.artist2_name
+					: collab.artist1_name;
 
-      // Create a hash for the link - more efficient than string concatenation
-      // Use a cantor pairing function for unique mapping of two integers to one
-      const a = Math.min(current.id, otherArtistId);
-      const b = Math.max(current.id, otherArtistId);
-      const pairHash = ((a + b) * (a + b + 1)) / 2 + b;
+			// Create a hash for the link - more efficient than string concatenation
+			// Use a cantor pairing function for unique mapping of two integers to one
+			const a = Math.min(current.id, otherArtistId);
+			const b = Math.max(current.id, otherArtistId);
+			const pairHash = ((a + b) * (a + b + 1)) / 2 + b;
 
-      if (!processedLinks.has(pairHash)) {
-        processedLinks.add(pairHash);
+			if (!processedLinks.has(pairHash)) {
+				processedLinks.add(pairHash);
 
-        // Add link
-        links.push({
-          source: current.id,
-          target: otherArtistId,
-          value: collab.collaboration_count,
-        });
-      }
+				// Add link
+				links.push({
+					source: current.id,
+					target: otherArtistId,
+					value: collab.collaboration_count,
+				});
+			}
 
-      // Add node if not visited
-      if (!visited.has(otherArtistId)) {
-        visited.add(otherArtistId);
+			// Add node if not visited
+			if (!visited.has(otherArtistId)) {
+				visited.add(otherArtistId);
 
-        // Add to queue for next depth
-        queue.push({ id: otherArtistId, depth: current.depth + 1 });
+				// Add to queue for next depth
+				queue.push({ id: otherArtistId, depth: current.depth + 1 });
 
-        // Add to nodes
-        nodes.set(otherArtistId, {
-          id: otherArtistId,
-          name: otherArtistName,
-          depth: current.depth + 1,
-        });
-      }
-    }
-  }
+				// Add to nodes
+				nodes.set(otherArtistId, {
+					id: otherArtistId,
+					name: otherArtistName,
+					depth: current.depth + 1,
+				});
+			}
+		}
+	}
 
-  // Convert nodes Map to array
-  const nodeArray = Array.from(nodes.values());
+	// Convert nodes Map to array
+	const nodeArray = Array.from(nodes.values());
 
-  return {
-    nodes: nodeArray,
-    links: links,
-  };
+	return {
+		nodes: nodeArray,
+		links: links,
+	};
 }
 
-export function processArtistsData(db: Database): Artist[] {
-  const artists = db
-    .query(
-      `SELECT DISTINCT ma.*
+export function getAllArtists(db: Database): Artist[] {
+	const artists = db
+		.query(
+			`SELECT ma.*
 FROM music_artists ma
-JOIN music_collaborations mc 
-ON ma.id = mc.artist1_id OR ma.id = mc.artist2_id
-LIMIT 10000
-`
-    )
-    .all();
+`,
+		)
+		.all();
 
-  // Fetch all collaborations
-  const collaborations = db
-    .query(
-      "SELECT artist1_id, artist2_id, collaboration_count FROM music_collaborations"
-    )
-    .all();
+	// Fetch all collaborations
+	const collaborations = db
+		.query(
+			"SELECT artist1_id, artist2_id, collaboration_count FROM music_collaborations",
+		)
+		.all();
 
-  // Convert artists to nodes
-  const nodes = artists.map((artist) => ({
-    id: artist.id,
-    name: artist.name,
-  }));
+	// Convert artists to nodes
+	const nodes = artists.map((artist) => ({
+		id: artist.id,
+		name: artist.name,
+	}));
 
-  const artistIds = new Set<string>(nodes.map((node) => node.id));
+	const artistIds = new Set<string>(nodes.map((node) => node.id));
 
-  // Convert collaborations to links
-  const links = collaborations
-    .filter(
-      (collab) =>
-        artistIds.has(collab.artist1_id) && artistIds.has(collab.artist2_id)
-    )
-    .map((collab) => ({
-      source: collab.artist1_id,
-      target: collab.artist2_id,
-      weight: collab.collaboration_count,
-    }));
+	// Convert collaborations to links
+	const links = collaborations
+		.filter(
+			(collab) =>
+				artistIds.has(collab.artist1_id) && artistIds.has(collab.artist2_id),
+		)
+		.map((collab) => ({
+			source: collab.artist1_id,
+			target: collab.artist2_id,
+			weight: collab.collaboration_count,
+		}));
 
-  return { nodes, links };
+	return { nodes, links };
 
-  // const rawArtists = musicQueries.getQualifiedArtists(db);
-  // const artistMap = new Map<string, Artist>();
+	// const rawArtists = musicQueries.getQualifiedArtists(db);
+	// const artistMap = new Map<string, Artist>();
 
-  // // First pass: Create all artist objects without collaborators
-  // for (const rawArtist of rawArtists) {
-  //   try {
-  //     const artist: Artist = {
-  //       id: rawArtist.id,
-  //       name: musicbrainzData.name || "Unknown",
-  //       born: musicbrainzData["life-span"]?.begin,
-  //       collaborators: [],
-  //     };
+	// // First pass: Create all artist objects without collaborators
+	// for (const rawArtist of rawArtists) {
+	//   try {
+	//     const artist: Artist = {
+	//       id: rawArtist.id,
+	//       name: musicbrainzData.name || "Unknown",
+	//       born: musicbrainzData["life-span"]?.begin,
+	//       collaborators: [],
+	//     };
 
-  //     artistMap.set(artist.id, artist);
-  //   } catch (error) {
-  //     console.error(
-  //       `Error processing artist data for ID ${rawArtist.id}:`,
-  //       error
-  //     );
-  //   }
-  // }
+	//     artistMap.set(artist.id, artist);
+	//   } catch (error) {
+	//     console.error(
+	//       `Error processing artist data for ID ${rawArtist.id}:`,
+	//       error
+	//     );
+	//   }
+	// }
 
-  // // Create a map to count collaborations for each artist
-  // const collaborationCountMap = new Map<string, Set<string>>();
+	// // Create a map to count collaborations for each artist
+	// const collaborationCountMap = new Map<string, Set<string>>();
 
-  // // Second pass: Get collaborators for each artist and build the count map
-  // for (const rawArtist of rawArtists) {
-  //   const artist = artistMap.get(rawArtist.id);
-  //   if (!artist) continue;
+	// // Second pass: Get collaborators for each artist and build the count map
+	// for (const rawArtist of rawArtists) {
+	//   const artist = artistMap.get(rawArtist.id);
+	//   if (!artist) continue;
 
-  //   // Get the collaborator IDs using the existing function
-  //   const collaboratorIds = musicQueries.getArtistCollaborators(
-  //     db,
-  //     rawArtist.id
-  //   );
+	//   // Get the collaborator IDs using the existing function
+	//   const collaboratorIds = musicQueries.getArtistCollaborators(
+	//     db,
+	//     rawArtist.id
+	//   );
 
-  //   // Add each collaborator to the artist's collaborators array
-  //   for (const collaboratorId of collaboratorIds) {
-  //     const collaborator = artistMap.get(collaboratorId);
-  //     if (collaborator) {
-  //       artist.collaborators.push(collaborator);
+	//   // Add each collaborator to the artist's collaborators array
+	//   for (const collaboratorId of collaboratorIds) {
+	//     const collaborator = artistMap.get(collaboratorId);
+	//     if (collaborator) {
+	//       artist.collaborators.push(collaborator);
 
-  //       // Track collaborations for filtering
-  //       if (!collaborationCountMap.has(collaboratorId)) {
-  //         collaborationCountMap.set(collaboratorId, new Set());
-  //       }
-  //       collaborationCountMap.get(collaboratorId)?.add(rawArtist.id);
-  //     }
-  //   }
-  // }
+	//       // Track collaborations for filtering
+	//       if (!collaborationCountMap.has(collaboratorId)) {
+	//         collaborationCountMap.set(collaboratorId, new Set());
+	//       }
+	//       collaborationCountMap.get(collaboratorId)?.add(rawArtist.id);
+	//     }
+	//   }
+	// }
 
-  // // Filter artists to only include those with collaborators who have multiple collaborations
-  // const filteredArtists = Array.from(artistMap.values()).filter((artist) => {
-  //   return artist.collaborators.some((collaborator) => {
-  //     const collaboratorArtists = collaborationCountMap.get(collaborator.id);
-  //     return collaboratorArtists && collaboratorArtists.size > 1;
-  //   });
-  // });
+	// // Filter artists to only include those with collaborators who have multiple collaborations
+	// const filteredArtists = Array.from(artistMap.values()).filter((artist) => {
+	//   return artist.collaborators.some((collaborator) => {
+	//     const collaboratorArtists = collaborationCountMap.get(collaborator.id);
+	//     return collaboratorArtists && collaboratorArtists.size > 1;
+	//   });
+	// });
 
-  // return filteredArtists;
+	// return filteredArtists;
 }
