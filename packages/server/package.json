@@ -1,5 +1,5 @@
 {
-	"name": "@show-graph/server",
+	"name": "@music-map/server",
 	"module": "src/index.ts",
 	"type": "module",
 	"private": true,
@@ -8,7 +8,7 @@
 		"check": "biome check --fix"
 	},
 	"dependencies": {
-		"@show-graph/shared": "workspace:*",
+		"@music-map/shared": "workspace:*",
 		"cheerio": "^1.0.0",
 		"dotenv": "^16.4.7",
 		"musicbrainz-api": "^0.21.0",

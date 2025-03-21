@@ -1,5 +1,5 @@
 {
-  "name": "@show-graph/shared",
+  "name": "@music-map/shared",
   "private": true,
   "module": "types.ts",
   "type": "module",
