@@ -1,14 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import type { ComputedTheme } from "@/components/theme-provider";
+import type { GraphData } from "@music-map/shared";
 import * as d3 from "d3";
-import { Container, Graphics } from "pixi.js";
+import type { Container } from "pixi.js";
+import { useEffect, useRef } from "react";
 import { SIMULATION_SETTINGS } from "../constants";
-import {
-	createGraphElements,
-	updateColors,
-	updatePositions,
-} from "./useGraphElements";
-import { ShowNode, Link, GraphData } from "@/lib/types";
-import { ComputedTheme, useTheme } from "@/components/theme-provider";
+import { createGraphElements, updatePositions } from "./useGraphElements";
 
 export function useGraphSimulation(
 	graphData: GraphData,
@@ -38,13 +34,7 @@ export function useGraphSimulation(
 			theme === "dark",
 		);
 
-		updatePositions(
-			nodes,
-			links,
-			nodeContainer,
-			linkContainer,
-			theme === "dark",
-		);
+		updatePositions(nodes, links, nodeContainer, linkContainer);
 	}, [graphData, theme]);
 
 	useEffect(() => {

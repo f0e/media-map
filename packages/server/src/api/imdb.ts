@@ -3,9 +3,9 @@ import numbro from "numbro";
 import { IMDB_BASE_URL } from "../config";
 
 export interface IMDBData {
-  rating: number;
-  votes: number;
-  creators: string[];
+	rating: number;
+	votes: number;
+	creators: string[];
 }
 
 export async function getIMDBData(imdbId: string): Promise<IMDBData> {

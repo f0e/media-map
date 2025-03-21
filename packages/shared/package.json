@@ -1,15 +1,4 @@
 {
-  "name": "@music-map/shared",
-  "private": true,
-  "module": "types.ts",
-  "type": "module",
-  "scripts": {
-    "build": "tsc"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  }
+	"name": "@music-map/shared",
+	"private": true
 }

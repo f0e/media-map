@@ -1,19 +1,19 @@
 import type { Database } from "bun:sqlite";
 import { getIMDBData } from "../api/imdb";
 import {
-	getShowExternalIds,
 	getShowCredits,
 	getShowDetails,
+	getShowExternalIds,
 	getTopRatedShows,
 } from "../api/tmdb";
+import { MAX_PAGES, UPDATE_INTERVAL_SECS } from "../config";
 import {
+	getQualifiedShows,
 	getShowLastUpdate,
 	getUnseenShows,
 	insertOrUpdateShow,
 	updateLastSeen,
-	getQualifiedShows,
 } from "../database/show-queries";
-import { MAX_PAGES, UPDATE_INTERVAL_SECS } from "../config";
 import type { GraphNode, Link } from "../types";
 
 export async function addOrUpdateShow(db: Database, showId: number) {

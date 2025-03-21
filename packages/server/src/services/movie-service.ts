@@ -1,14 +1,14 @@
 import type { Database } from "bun:sqlite";
+import type { GraphData, GraphNode, Link } from "@music-map/shared";
 import { getIMDBData } from "../api/imdb";
 import {
-	getMovieExternalIds,
 	getMovieCredits,
 	getMovieDetails,
+	getMovieExternalIds,
 	getTopRatedMovies,
 } from "../api/tmdb";
-import * as movieQueries from "../database/movie-queries";
 import { MAX_PAGES, UPDATE_INTERVAL_SECS } from "../config";
-import type { GraphData, GraphNode, Link, Movie, Person } from "../types";
+import * as movieQueries from "../database/movie-queries";
 
 export async function addOrUpdateMovie(db: Database, movieId: number) {
 	// check if movie exists and needs update
@@ -98,30 +98,6 @@ export async function updateMovieDatabase(db: Database) {
 		db,
 		unseenIds.map((id: any) => ({ id })),
 	);
-}
-
-export function filterMovies(movies: Movie[]): Movie[] {
-	// filter movies to only include those with creators who have multiple movies
-	const creatorsMap = new Map<string, Set<string>>();
-
-	for (const movie of movies) {
-		for (const person of movie.people) {
-			if (!creatorsMap.has(person.id)) {
-				creatorsMap.set(person.id, new Set());
-			}
-
-			creatorsMap.get(person.id)?.add(movie.id);
-		}
-	}
-
-	const filteredMovies = movies.filter((movie) => {
-		return movie.people.some((person) => {
-			const creatorMovies = creatorsMap.get(person.id);
-			return creatorMovies && creatorMovies.size > 1;
-		});
-	});
-
-	return filteredMovies;
 }
 
 export function processMovieData(db: Database): GraphData {

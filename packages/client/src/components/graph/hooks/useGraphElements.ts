@@ -1,7 +1,7 @@
-import { Container, Graphics, Text, Circle } from "pixi.js";
-import { NODE_SIZE, MAX_ZOOM, stringToColor } from "../constants";
-import type { GraphNode, Link } from "@/lib/types";
 import { getNetworkColor } from "@/lib/networks";
+import type { GraphNode, Link } from "@music-map/shared";
+import { Circle, Container, Graphics, Text } from "pixi.js";
+import { MAX_ZOOM, NODE_SIZE, stringToColor } from "../constants";
 
 export function createGraphElements(
 	nodes: GraphNode[],
@@ -49,7 +49,7 @@ export function createGraphElements(
 		const circle = new Graphics();
 
 		// Fill color based on node type, with theme consideration
-		let fillColor;
+		let fillColor: number;
 		if (node.type !== "person") {
 			if (node.topText?.length) {
 				// Apply theme-specific color adjustment to network colors

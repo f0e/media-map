@@ -1,10 +1,10 @@
 import type { Database } from "bun:sqlite";
+import type { GraphData } from "@music-map/shared";
 import { SERVER_PORT } from "../config";
-import { processMovieData as getMovieNetwork } from "../services/movie-service";
-import { getShowNetwork } from "../services/show-service";
-import { getArtistCollaborationNetwork } from "../services/music-service";
 import { processGraph } from "../services/graph";
-import type { GraphData } from "../types";
+import { processMovieData as getMovieNetwork } from "../services/movie-service";
+import { getArtistCollaborationNetwork } from "../services/music-service";
+import { getShowNetwork } from "../services/show-service";
 
 export function startServer(db: Database) {
 	Bun.serve({

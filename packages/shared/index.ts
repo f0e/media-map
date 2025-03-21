@@ -1,3 +1,4 @@
+// server
 export interface GraphNode {
 	id: string;
 	label: string;
@@ -6,8 +7,10 @@ export interface GraphNode {
 	groupLinks: number;
 	year?: number;
 	topText?: string[];
-	x?: number;
-	y?: number;
+	vx?: number; // force graph adds this
+	vy?: number; // force graph adds this
+	x?: number; // force graph adds this
+	y?: number; // force graph adds this
 }
 
 export interface Link {
@@ -20,6 +23,7 @@ export interface Link {
 export interface GraphData {
 	nodes: GraphNode[];
 	links: Link[];
+	simulation?: d3.Simulation<any, any>;
 }
 
 export interface Person {
@@ -54,3 +58,5 @@ export interface Artist {
 	born: string;
 	collaborators: Artist[];
 }
+
+export type MediaType = "shows" | "movies" | "music-artists";

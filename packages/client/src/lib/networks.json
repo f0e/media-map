@@ -1,142 +1,142 @@
 {
-  "netflix": {
-    "color": "#E50914",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
-  },
-  "hulu": {
-    "color": "#1CE783",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Hulu_logo_%282018%29.svg"
-  },
-  "amazon": {
-    "color": "#00A8E1",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.svg"
-  },
-  "disney+": {
-    "color": "#113CCF",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg"
-  },
-  "apple tv+": {
-    "color": "#000000",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg"
-  },
-  "prime video": {
-    "color": "#0779FF",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/9/90/Prime_Video_logo_%282024%29.svg"
-  },
-  "hbo max": {
-    "color": "#5822B4",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg"
-  },
-  "paramount+": {
-    "color": "#0064FF",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Paramount_Plus.svg"
-  },
-  "peacock": {
-    "color": "#000F9F",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/d/d3/NBCUniversal_Peacock_Logo.svg"
-  },
-  "amc": {
-    "color": "#BE0E1D",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/1/16/AMC_logo_2016.svg"
-  },
-  "nbc": {
-    "color": "#FFF100",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/7/7a/NBC_logo_2022_%28vertical%29.svg"
-  },
-  "abc": {
-    "color": "#000000",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/5/54/American_Broadcasting_Company_Logo.svg"
-  },
-  "cbs": {
-    "color": "#0052A5",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/ee/CBS_logo_%282020%29.svg"
-  },
-  "tnt": {
-    "color": "#E42313",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/e/ec/TNT_%28TV_Channel%29.svg"
-  },
-  "fox": {
-    "color": "#005AFF",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Fox_Broadcasting_Company_logo_%282019%29.svg"
-  },
-  "cw": {
-    "color": "#00A388",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/4c/The_CW.svg"
-  },
-  "bbc": {
-    "color": "#BB1919",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/41/BBC_Logo_2021.svg"
-  },
-  "itv": {
-    "color": "#103D91",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/0a/ITV_logo_2019.svg"
-  },
-  "channel 4": {
-    "color": "#503E96",
-    "logo": "https://upload.wikimedia.org/wikipedia/en/9/9b/Channel_4_%28On_Demand%29_2023.svg"
-  },
-  "fx": {
-    "color": "#000000",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/4/4d/FX_International_logo.svg"
-  },
-  "tbs": {
-    "color": "#00A0E2",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/b/be/TBS_logo_2016.svg"
-  },
-  "showtime": {
-    "color": "#B20000",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/2/22/Showtime.svg"
-  },
-  "starz": {
-    "color": "#016577",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/03/Starz_2022.svg"
-  },
-  "syfy": {
-    "color": "#4158DD",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/b/be/SYFY.svg"
-  },
-  "history": {
-    "color": "#0072CE",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/f5/History_Logo.svg"
-  },
-  "discovery": {
-    "color": "#0898D4",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/f/f1/2019_Discovery_logo.svg"
-  },
-  "pbs": {
-    "color": "#2638C4",
-    "logo": "https://upload.wikimedia.org/wikipedia/en/3/33/PBS_logo.svg"
-  },
-  "mtv": {
-    "color": "#000000",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/6/68/MTV_2021_%28brand_version%29.svg"
-  },
-  "bbc one": {
-    "color": "#BB1919",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/8/8b/BBC_One_logo_2021.svg"
-  },
-  "the wb": {
-    "color": "#1B75BB",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/02/Logo_of_The_WB.svg"
-  },
-  "hbo": {
-    "color": "#000000",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/d/de/HBO_logo.svg"
-  },
-  "usa network": {
-    "color": "#0033A0",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/d/d7/USA_Network_logo_%282016%29.svg"
-  },
-  "cartoon network": {
-    "color": "#00AEEF",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/8/80/Cartoon_Network_2010_logo.svg"
-  },
-  "the cw": {
-    "color": "#00A388",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/b/b1/The_CW_2024.svg"
-  },
-  "abc family": {
-    "color": "#00A0E6",
-    "logo": "https://upload.wikimedia.org/wikipedia/en/8/84/ABC_Family_Australia_logo_2024.svg"
-  }
+	"netflix": {
+		"color": "#E50914",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
+	},
+	"hulu": {
+		"color": "#1CE783",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Hulu_logo_%282018%29.svg"
+	},
+	"amazon": {
+		"color": "#00A8E1",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.svg"
+	},
+	"disney+": {
+		"color": "#113CCF",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg"
+	},
+	"apple tv+": {
+		"color": "#000000",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg"
+	},
+	"prime video": {
+		"color": "#0779FF",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/9/90/Prime_Video_logo_%282024%29.svg"
+	},
+	"hbo max": {
+		"color": "#5822B4",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg"
+	},
+	"paramount+": {
+		"color": "#0064FF",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Paramount_Plus.svg"
+	},
+	"peacock": {
+		"color": "#000F9F",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/d/d3/NBCUniversal_Peacock_Logo.svg"
+	},
+	"amc": {
+		"color": "#BE0E1D",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/1/16/AMC_logo_2016.svg"
+	},
+	"nbc": {
+		"color": "#FFF100",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/7/7a/NBC_logo_2022_%28vertical%29.svg"
+	},
+	"abc": {
+		"color": "#000000",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/5/54/American_Broadcasting_Company_Logo.svg"
+	},
+	"cbs": {
+		"color": "#0052A5",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/e/ee/CBS_logo_%282020%29.svg"
+	},
+	"tnt": {
+		"color": "#E42313",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/e/ec/TNT_%28TV_Channel%29.svg"
+	},
+	"fox": {
+		"color": "#005AFF",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Fox_Broadcasting_Company_logo_%282019%29.svg"
+	},
+	"cw": {
+		"color": "#00A388",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/4/4c/The_CW.svg"
+	},
+	"bbc": {
+		"color": "#BB1919",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/4/41/BBC_Logo_2021.svg"
+	},
+	"itv": {
+		"color": "#103D91",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/0/0a/ITV_logo_2019.svg"
+	},
+	"channel 4": {
+		"color": "#503E96",
+		"logo": "https://upload.wikimedia.org/wikipedia/en/9/9b/Channel_4_%28On_Demand%29_2023.svg"
+	},
+	"fx": {
+		"color": "#000000",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/4/4d/FX_International_logo.svg"
+	},
+	"tbs": {
+		"color": "#00A0E2",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/b/be/TBS_logo_2016.svg"
+	},
+	"showtime": {
+		"color": "#B20000",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/2/22/Showtime.svg"
+	},
+	"starz": {
+		"color": "#016577",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/0/03/Starz_2022.svg"
+	},
+	"syfy": {
+		"color": "#4158DD",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/b/be/SYFY.svg"
+	},
+	"history": {
+		"color": "#0072CE",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/f/f5/History_Logo.svg"
+	},
+	"discovery": {
+		"color": "#0898D4",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/f/f1/2019_Discovery_logo.svg"
+	},
+	"pbs": {
+		"color": "#2638C4",
+		"logo": "https://upload.wikimedia.org/wikipedia/en/3/33/PBS_logo.svg"
+	},
+	"mtv": {
+		"color": "#000000",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/6/68/MTV_2021_%28brand_version%29.svg"
+	},
+	"bbc one": {
+		"color": "#BB1919",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/8/8b/BBC_One_logo_2021.svg"
+	},
+	"the wb": {
+		"color": "#1B75BB",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/0/02/Logo_of_The_WB.svg"
+	},
+	"hbo": {
+		"color": "#000000",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/d/de/HBO_logo.svg"
+	},
+	"usa network": {
+		"color": "#0033A0",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/d/d7/USA_Network_logo_%282016%29.svg"
+	},
+	"cartoon network": {
+		"color": "#00AEEF",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/8/80/Cartoon_Network_2010_logo.svg"
+	},
+	"the cw": {
+		"color": "#00A388",
+		"logo": "https://upload.wikimedia.org/wikipedia/commons/b/b1/The_CW_2024.svg"
+	},
+	"abc family": {
+		"color": "#00A0E6",
+		"logo": "https://upload.wikimedia.org/wikipedia/en/8/84/ABC_Family_Australia_logo_2024.svg"
+	}
 }

@@ -1,5 +1,5 @@
+import type { GraphData, GraphNode } from "@music-map/shared";
 import Fuse from "fuse.js";
-import type { GraphData, GraphNode } from "@/lib/types";
 
 export const initFuseSearch = (nodes: GraphNode[]) => {
 	return new Fuse(nodes, {

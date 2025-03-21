@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
-import { Application } from "pixi.js";
 import { Viewport } from "pixi-viewport";
+import { Application } from "pixi.js";
 import { Container } from "pixi.js";
+import { useEffect, useRef } from "react";
+import { MAX_ZOOM, MIN_ZOOM, START_ZOOM } from "../constants";
 import type { GraphState, PixiRefs } from "../types";
-import { MIN_ZOOM, MAX_ZOOM, START_ZOOM } from "../constants";
 
 export function usePixiApp(
 	canvasRef: React.RefObject<HTMLCanvasElement>,

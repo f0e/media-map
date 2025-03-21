@@ -1,9 +1,23 @@
 {
+	"files": {
+		"ignore": ["tsconfig*.json", "components/ui/*.tsx"]
+	},
 	"linter": {
 		"rules": {
+			"style": {
+				"noNonNullAssertion": "off"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "off"
+			},
 			"suspicious": {
 				"noExplicitAny": "off"
 			}
 		}
+	},
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
 	}
 }

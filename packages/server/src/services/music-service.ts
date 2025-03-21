@@ -1,17 +1,7 @@
-// music-service.ts
 import type { Database } from "bun:sqlite";
-import * as musicQueries from "../database/music-queries";
-import { MAX_PAGES, UPDATE_INTERVAL_SECS } from "../config";
-import type {
-	Artist,
-	GraphData,
-	GraphNode,
-	Link,
-	Music,
-	Person,
-} from "../types";
+import type { GraphData, GraphNode, Link } from "@music-map/shared";
 import mb from "../api/musicbrainz";
-import { getMonthlyListeners } from "../api/lastfm";
+import * as musicQueries from "../database/music-queries";
 
 // export async function addOrUpdateMusic(db: Database, musicId: number) {
 //   // check if music exists and needs update
@@ -287,7 +277,8 @@ export async function getArtistCollaborationNetwork(
 
 	// BFS to find all artists up to maxDepth
 	while (queue.length > 0) {
-		const current = queue.shift()!;
+		const current = queue.shift();
+		if (!current) break; // typescript
 
 		// Skip if we've reached max depth
 		if (current.depth >= maxDepth) {

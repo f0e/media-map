@@ -1,5 +1,5 @@
-import type { GraphData, MediaType } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
+import type { GraphData, MediaType } from "@music-map/shared";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
 
 export const useMediaData = (mediaType: MediaType) => {
 	const endpoints: Record<MediaType, string> = {
@@ -8,7 +8,7 @@ export const useMediaData = (mediaType: MediaType) => {
 		"music-artists": "http://localhost:3001/api/music/artists",
 	};
 
-	if (!endpoints[mediaType]) return;
+	if (!endpoints[mediaType]) return null;
 
 	return useQuery({
 		queryKey: [mediaType],
