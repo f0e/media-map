@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Application, Graphics } from "pixi.js";
+import { useEffect, useRef } from "react";
+import { Application } from "pixi.js";
 import { Viewport } from "pixi-viewport";
 import { Container } from "pixi.js";
 import type { GraphState, PixiRefs } from "../types";

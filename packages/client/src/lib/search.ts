@@ -17,8 +17,7 @@ export const performSearch = (
 ) => {
 	if (!graphRef || !query) return;
 
-	const showNodes = graphData.nodes.filter((node) => node.type !== "person");
-	const fuse = initFuseSearch(showNodes);
+	const fuse = initFuseSearch(graphData.nodes);
 	const results = fuse.search(query);
 
 	if (results.length === 0) return;

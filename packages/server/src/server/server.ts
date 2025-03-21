@@ -4,7 +4,7 @@ import { processMovieData as getMovieNetwork } from "../services/movie-service";
 import { getShowNetwork } from "../services/show-service";
 import { getArtistCollaborationNetwork } from "../services/music-service";
 import { processGraph } from "../services/graph";
-import type { Graph } from "../types";
+import type { GraphData } from "../types";
 
 export function startServer(db: Database) {
 	Bun.serve({
@@ -46,6 +46,8 @@ export function startServer(db: Database) {
 				if (graphData) {
 					graphData = await processGraph(graphData);
 					res = new Response(JSON.stringify(graphData));
+				} else {
+					throw "Fail";
 				}
 			} catch (error) {
 				console.error("API Error:", error);
