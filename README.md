@@ -1,6 +1,6 @@
 # [MediaMap](https://mediamap.tekno.sh)
 
-A collection of [force-directed graphs](https://en.wikipedia.org/wiki/Force-directed_graph_drawing), showing the most highly-rated shows & movies connected by creator/director.
+A collection of [force-directed graphs](https://en.wikipedia.org/wiki/Force-directed_graph_drawing) showing the most highly-rated shows & movies connected by creator/director.
 
 ## Screenshots
 
