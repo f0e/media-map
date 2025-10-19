@@ -1,4 +1,4 @@
-import type { GraphData, GraphNode } from "@music-map/shared";
+import type { GraphData, GraphNode } from "@media-map/shared";
 
 export async function processGraph(data: GraphData) {
 	// const positionsRes = await fetch("http://localhost:8000/api/generate", {

@@ -1,4 +1,4 @@
-import type { GraphData, MediaType } from "@music-map/shared";
+import type { GraphData, MediaType } from "@media-map/shared";
 import { useQuery } from "@tanstack/react-query";
 
 const isDev = false; // import.meta.env.DEV;

@@ -23,6 +23,7 @@ jobs:
       - name: Build client
         run: |
           cd packages/client
+          bun install
           bun run build
 
       - name: Setup Pages

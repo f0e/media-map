@@ -1,5 +1,5 @@
 import { getNetworkColor } from "@/lib/networks";
-import type { GraphNode, Link } from "@music-map/shared";
+import type { GraphNode, Link } from "@media-map/shared";
 import { Circle, Container, Graphics, Text } from "pixi.js";
 import { MAX_ZOOM, NODE_SIZE, stringToColor } from "../constants";
 

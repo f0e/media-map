@@ -3,7 +3,7 @@ import SearchForm from "@/components/search-form";
 import { Button } from "@/components/ui/button";
 import { useMediaData } from "@/lib/api";
 import { cn } from "@/lib/utils";
-import type { MediaType } from "@music-map/shared";
+import type { MediaType } from "@media-map/shared";
 import { Link, useRouter } from "@tanstack/react-router";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";

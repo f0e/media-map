@@ -1,5 +1,5 @@
 import type { ComputedTheme } from "@/components/theme-provider";
-import type { GraphData } from "@music-map/shared";
+import type { GraphData } from "@media-map/shared";
 import * as d3 from "d3";
 import type { Container } from "pixi.js";
 import { useEffect, useRef } from "react";

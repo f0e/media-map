@@ -1,5 +1,7 @@
 {
-	"name": "@music-map/root",
+	"name": "@media-map/root",
 	"version": "1.0.0",
-	"workspaces": ["packages/*"]
+	"workspaces": [
+		"packages/*"
+	]
 }

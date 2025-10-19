@@ -1,4 +1,4 @@
-import type { GraphData, MediaType } from "@music-map/shared";
+import type { GraphData, MediaType } from "@media-map/shared";
 import type { Viewport } from "pixi-viewport";
 import type { Application, Container } from "pixi.js";
 

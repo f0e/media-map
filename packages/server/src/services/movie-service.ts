@@ -1,5 +1,5 @@
 import type { Database } from "bun:sqlite";
-import type { GraphData, GraphNode, Link } from "@music-map/shared";
+import type { GraphData, GraphNode, Link } from "@media-map/shared";
 import { getIMDBData } from "../api/imdb";
 import {
 	getMovieCredits,

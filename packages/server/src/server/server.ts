@@ -1,5 +1,5 @@
 import type { Database } from "bun:sqlite";
-import type { GraphData } from "@music-map/shared";
+import type { GraphData } from "@media-map/shared";
 import { SERVER_PORT } from "../config";
 import { processGraph } from "../services/graph";
 import { processMovieData as getMovieNetwork } from "../services/movie-service";

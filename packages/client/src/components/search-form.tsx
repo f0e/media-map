@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { performSearch } from "@/lib/search";
-import type { GraphData } from "@music-map/shared";
+import type { GraphData } from "@media-map/shared";
 import type React from "react";
 import type { FormEvent, RefObject } from "react";
 
