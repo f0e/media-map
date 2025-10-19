@@ -40,7 +40,6 @@ export function insertOrUpdateShow(
 			imdbId,
 			imdbData?.rating ?? null,
 			imdbData?.votes ?? null,
-			JSON.stringify(imdbData?.creators),
 			JSON.stringify(crew),
 			now,
 			now,

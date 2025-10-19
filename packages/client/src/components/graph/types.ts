@@ -1,10 +1,11 @@
-import type { GraphData } from "@music-map/shared";
+import type { GraphData, MediaType } from "@music-map/shared";
 import type { Viewport } from "pixi-viewport";
 import type { Application, Container } from "pixi.js";
 
 export interface GraphProps {
 	graphData: GraphData;
-	graphRef: React.MutableRefObject<GraphMethods | null>;
+	graphRef: any;
+	mediaType: MediaType;
 }
 
 export interface GraphMethods {

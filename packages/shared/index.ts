@@ -59,4 +59,4 @@ export interface Artist {
 	collaborators: Artist[];
 }
 
-export type MediaType = "shows" | "movies" | "music-artists";
+export type MediaType = "shows" | "movies"; // | "music-artists";

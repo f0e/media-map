@@ -10,6 +10,7 @@ const db = initDatabase();
 
 startServer(db);
 
-// getTMDBTopMovies(db);
-// updateDatabase(db);
-// musicTest(db);
+// background tasks
+// await getTMDBTopShows(db);
+// await getTMDBTopMovies(db);
+// await updateDatabase(db);

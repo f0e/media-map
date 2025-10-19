@@ -81,9 +81,9 @@ export function usePixiApp(
 	useEffect(() => {
 		if (!canvasRef.current) return;
 
-		const app = initPixi();
+		const appPromise = initPixi();
 
-		app.then(({ app, viewport, linkContainer, nodeContainer }) => {
+		appPromise.then(({ app, viewport, linkContainer, nodeContainer }) => {
 			appRef.current = app;
 
 			viewportRef.current = viewport;
@@ -92,9 +92,10 @@ export function usePixiApp(
 			nodeContainerRef.current = nodeContainer;
 		});
 
-		return async () => {
-			const appInstance = await app;
-			appInstance.app.stop();
+		return () => {
+			appPromise.then(({ app }) => {
+				app.stop();
+			});
 		};
 	}, [canvasRef]);
 

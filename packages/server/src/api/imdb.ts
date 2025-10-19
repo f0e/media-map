@@ -14,12 +14,26 @@ export async function getIMDBData(imdbId: string): Promise<IMDBData> {
 	if (response.status !== 200) throw new Error("fail");
 
 	const $ = cheerio.load(await response.text());
+	const ratingContainer = $(
+		'[data-testid="hero-rating-bar__aggregate-rating"]',
+	);
 
-	// todo: do these classes change? if so, make this more robust
-	const ratingRaw = $(".sc-d541859f-1.imUuxf").first().text();
+	const ratingRaw = ratingContainer
+		.find('[data-testid="hero-rating-bar__aggregate-rating__score"] span')
+		.first()
+		.text()
+		.trim();
+
+	const votesRaw = ratingContainer
+		.find('[data-testid="hero-rating-bar__aggregate-rating__score"]')
+		.parent()
+		.find("div")
+		.last()
+		.text()
+		.trim();
+
 	const rating = Number.parseFloat(ratingRaw);
 
-	const votesRaw = $(".sc-d541859f-3.dwhNqC").first().text();
 	const votes = numbro.unformat(votesRaw.toLowerCase());
 
 	const creators = [

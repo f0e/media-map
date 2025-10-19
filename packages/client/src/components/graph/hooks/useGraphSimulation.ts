@@ -114,11 +114,11 @@ export function useGraphSimulation(
 			// Push things towards the center based on group size
 			.force(
 				"y",
-				d3.forceY(0).strength((d) => getCenterForce(d.groupLinks)),
+				d3.forceY(0).strength((d) => getCenterForce((d as any).groupLinks)),
 			)
 			.force(
 				"x",
-				d3.forceX(0).strength((d) => getCenterForce(d.groupLinks)),
+				d3.forceX(0).strength((d) => getCenterForce((d as any).groupLinks)),
 			)
 			// initial push
 			.force(
