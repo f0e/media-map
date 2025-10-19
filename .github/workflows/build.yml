@@ -2,37 +2,50 @@ name: Build
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
       - name: Install dependencies
+        working-directory: packages/client
         run: bun install
 
-      - name: Build client
+      - name: Build application
+        working-directory: packages/client
+        run: bun run build
+
+      - name: Deploy to static branch
         run: |
-          cd packages/client
-          bun run build
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+          # store things needed for static deployment
+          mkdir -p /tmp/static
+          cp -r packages/client/dist /tmp/static
+          cp wrangler.jsonc /tmp/static
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: packages/client/dist
+          # create new blank static branch (no history)
+          git checkout --orphan static
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          # remove everything but .git
+          find . -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
+
+          cp -r /tmp/static/. .
+
+          git add -A
+          git commit -m "Deploy build from ${{ github.sha }}"
+
+          git push origin static --force
