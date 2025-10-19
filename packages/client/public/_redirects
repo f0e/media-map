@@ -1,0 +1,3 @@
+# todo: handle properly, this is good enough for now (works)
+/shows    /index.html   200
+/movies    /index.html   200
